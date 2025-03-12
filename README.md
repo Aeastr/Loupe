@@ -4,21 +4,25 @@
   <p>
     A simple SwiftUI debugging tool that reveals exactly when your views re‑render.
     <br>
-    <i>Compatible with iOS 13.0 and later</i>
+    <i>Compatible with iOS 13.0 and later, macOS 10.15 and later</i>
   </p>
 </div>
 
 <div align="center">
- <a href="https://swift.org">
-  <img src="https://img.shields.io/badge/Swift-5.9%20%7C%206-orange.svg" alt="Swift Version">
-</a>
+  <a href="https://swift.org">
+    <img src="https://img.shields.io/badge/Swift-5.9%20%7C%206-orange.svg" alt="Swift Version">
+  </a>
   <a href="https://www.apple.com/ios/">
     <img src="https://img.shields.io/badge/iOS-13%2B-blue.svg" alt="iOS">
+  </a>
+  <a href="https://www.apple.com/macos/">
+    <img src="https://img.shields.io/badge/macOS-10.15%2B-blue.svg" alt="macOS">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   </a>
 </div>
+
 
 ---
 
