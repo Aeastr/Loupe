@@ -61,3 +61,5 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.DS_Store
+Sources/.DS_Store

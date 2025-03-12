@@ -33,7 +33,7 @@ struct RenderDebugView<Content: View>: View {
     }
 }
 
-extension View {
+public extension View {
     /// Wraps the view in a debug wrapper that highlights render updates.
     func checkForRender() -> some View {
         RenderDebugView(content: self)
