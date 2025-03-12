@@ -8,11 +8,12 @@
 import SwiftUI
 
 @available(iOS 18.0, *)
+@available(macOS 15, *)
 struct RMTDemoView: View {
     @State private var counter = 0
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 
                 VStack(alignment: .leading, spacing: 12) {
@@ -49,6 +50,7 @@ struct RMTDemoView: View {
 }
 
 @available(iOS 18.0, *)
+@available(macOS 15, *)
 struct RMTSubDemoView: View {
     @State private var counter = 0
     
@@ -92,14 +94,17 @@ struct RMTDemoView_Pre18: View {
                     Button(action: {
                         counter += 1
                     }) {
-                        HStack{
+                        HStack {
                             Text("Increment")
-                            Image(systemName: "plus.circle.fill")
+                            if #available(iOS 13.0, macOS 11.0, *) {
+                                Image(systemName: "plus.circle.fill")
+                            }
                         }
-                            .padding()
-                            .background(Color.blue.opacity(0.2))
-                            .cornerRadius(8)
+                        .padding()
+                        .background(Color.blue.opacity(0.2))
+                        .cornerRadius(8)
                     }
+
                     .checkForRender()
 
                     Divider()
@@ -132,7 +137,9 @@ struct RMTSubDemoView_Pre18: View {
             }) {
                 HStack{
                     Text("Increment")
-                    Image(systemName: "plus.circle.fill")
+                    if #available(iOS 13.0, macOS 11.0, *) {
+                        Image(systemName: "plus.circle.fill")
+                    }
                 }
                     .padding()
                     .background(Color.green.opacity(0.2))
@@ -144,6 +151,7 @@ struct RMTSubDemoView_Pre18: View {
 }
 
 @available(iOS 18.0, *)
+@available(macOS 15, *)
 #Preview("Wrapper") {
     RMTDemoView()
 }

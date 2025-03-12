@@ -10,6 +10,7 @@ import SwiftUI
 
 /// A convenience view that applies the rendering debug wrapper to each subview.
 /// [basically, it wraps every subview with the modifier that detects when it re-renders]
+@available(macOS 15, *)
 @available(iOS 18.0, *)
 // only available on ios 18+ (bc it uses new swiftui apis introduced in ios 18)
 struct RenderCheck<Content: View>: View {
