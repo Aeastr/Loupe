@@ -29,9 +29,6 @@ struct RMTDemoView: View {
                             counter += 1
                         }) {
                             Label("Increment", systemImage: "plus.circle.fill")
-                                .padding()
-                                .background(Color.blue.opacity(0.2))
-                                .cornerRadius(8)
                         }
                         
                         Divider()
@@ -65,9 +62,6 @@ struct RMTSubDemoView: View {
                     counter += 1
                 }) {
                     Label("Increment", systemImage: "plus.circle.fill")
-                        .padding()
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(8)
                 }
             }
         }
@@ -100,9 +94,6 @@ struct RMTDemoView_Pre18: View {
                                 Image(systemName: "plus.circle.fill")
                             }
                         }
-                        .padding()
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(8)
                     }
 
                     .checkForRender()
@@ -141,9 +132,6 @@ struct RMTSubDemoView_Pre18: View {
                         Image(systemName: "plus.circle.fill")
                     }
                 }
-                    .padding()
-                    .background(Color.green.opacity(0.2))
-                    .cornerRadius(8)
             }
             .checkForRender()
         }
