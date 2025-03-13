@@ -30,6 +30,8 @@
 
 RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when your views re‑render. By integrating RenderMeThis into your project, each re‑render is highlighted by a brief red flash, making it easier to track down unnecessary view updates and optimize performance. Designed for iOS 13.0 and later, RenderMeThis offers both a modifier-based method and a wrapper-based method for flexible integration into your SwiftUI views.
 
+> As of now this works by wrapping your code, or using a modifier, but I'm cooking something a bit more cool for later
+
 ![Example](/assets/example.gif)
 
 ---
