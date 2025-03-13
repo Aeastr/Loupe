@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="360" height="360" src="/assets/icon.png" alt="RenderMeThis Logo">
+  <img width="360" height="314.65" src="/assets/icon2.png" alt="RenderMeThis Logo">
   <h1><b>RenderMeThis</b></h1>
   <p>
     A simple SwiftUI debugging tool that reveals exactly when your views re‑render.
