@@ -38,9 +38,6 @@ RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when
 
 ---
 
-
----
-
 ## **Installation**
 
 ### Swift Package Manager
@@ -52,21 +49,6 @@ RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when
 
 ---
 
-## **Key Components**
-
-- **RenderDebugView**  
-  A SwiftUI wrapper that overlays its content with a brief red flash each time the view is re‑initialized. This flash indicates that the view has re‑rendered.
-
-- **RenderCheck**  
-  A convenience wrapper that applies the render debugging effect to multiple subviews. By using `@ViewBuilder`, it accepts and wraps multiple views with the render detection modifier.
-
-- **LocalRenderManager**  
-  An internal utility responsible for managing the flash state. It triggers a temporary red flash by setting a Boolean flag that controls the overlay’s opacity.
-
-- **Modifier Method**  
-  An extension on `View` called `checkForRender()` which wraps any view in a `RenderDebugView`, allowing for quick and simple integration of the render debugging effect.
-
----
 
 ## **Usage**
 
@@ -216,6 +198,22 @@ struct ContentSubView: View {
     }
 }
 ```
+
+---
+
+## **Key Components**
+
+- **RenderDebugView**  
+  A SwiftUI wrapper that overlays its content with a brief red flash each time the view is re‑initialized. This flash indicates that the view has re‑rendered.
+
+- **RenderCheck**  
+  A convenience wrapper that applies the render debugging effect to multiple subviews. By using `@ViewBuilder`, it accepts and wraps multiple views with the render detection modifier.
+
+- **LocalRenderManager**  
+  An internal utility responsible for managing the flash state. It triggers a temporary red flash by setting a Boolean flag that controls the overlay’s opacity.
+
+- **Modifier Method**  
+  An extension on `View` called `checkForRender()` which wraps any view in a `RenderDebugView`, allowing for quick and simple integration of the render debugging effect.
 
 ---
 
