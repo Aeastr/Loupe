@@ -22,7 +22,7 @@ class LocalRenderManager: ObservableObject {
 
     func triggerRender() {
         rendered = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             // if you don't mark the class `@MainActor`, the compiler will get mad
             // bc `self` is coming from an implicitly nonisolated context
             // (fancy way of saying: this function isn't explicitly tied to any one thread,

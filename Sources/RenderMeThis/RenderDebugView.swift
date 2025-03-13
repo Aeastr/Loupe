@@ -26,7 +26,7 @@ struct RenderDebugView<Content: View>: View {
         content
             .overlay(
                 Color.red
-                    .opacity(renderManager.rendered ? 0.3 : 0)
+                    .opacity(renderManager.rendered ? 0.3 : 0.0)
                     .animation(.easeOut(duration: 0.3), value: renderManager.rendered)
                     .allowsHitTesting(false)
             )
@@ -38,4 +38,10 @@ public extension View {
     func checkForRender() -> some View {
         RenderDebugView(content: self)
     }
+}
+
+@available(iOS 18.0, *)
+@available(macOS 15, *)
+#Preview("Wrapper") {
+    RMTDemoView()
 }
