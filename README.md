@@ -23,7 +23,6 @@
   </a>
 </div>
 
-
 ---
 
 ## **Overview**
@@ -33,6 +32,12 @@ RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when
 > As of now this works by wrapping your code, or using a modifier, but I'm cooking something a bit more cool for later
 
 ![Example](/assets/example.gif)
+
+---
+
+## **How SwiftUI Rendering Works**
+
+SwiftUI re-computes a view’s `body` whenever its state changes, but that doesn’t mean it rebuilds the entire UI. Instead, SwiftUI uses a diffing system to compare the new view hierarchy with the old one, updating only the parts that have actually changed. If you break your UI into separate structs and a subview (like a text field) has no state change, it won’t be re-rendered at all—achieving re-render behavior similar to UIKit.
 
 ---
 
