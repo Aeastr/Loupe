@@ -54,6 +54,11 @@ RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when
 
 Below are two sets of examples demonstrating how to use RenderMeThis. The first set leverages the **wrapper method** (using `RenderCheck`), available on iOS 18+; the second uses the **modifier method** (using `checkForRender()`) for iOS 13+.
 
+### **Debugging vs. Production**
+> Important: RenderMeThis is a development utility intended solely for debugging purposes. The debug overlay—which highlights view re‑renders with a red flash—is conditionally compiled using Swift’s `#if DEBUG` directive. This means that in production builds, the debugging code is automatically excluded, ensuring that your app remains lean without any unintended visual effects or performance overhead.
+
+> Please ensure that your project’s build settings correctly define the DEBUG flag for development configurations. This will guarantee that the render debugging features are active only during development and testing.
+
 ### **Wrapper Method (iOS 18+)**
 
 Wrap your entire view hierarchy with `RenderCheck` to automatically apply render debugging to every subview:

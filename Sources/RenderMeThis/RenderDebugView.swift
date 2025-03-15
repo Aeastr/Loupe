@@ -36,7 +36,11 @@ struct RenderDebugView<Content: View>: View {
 public extension View {
     /// Wraps the view in a debug wrapper that highlights render updates.
     func checkForRender() -> some View {
-        RenderDebugView(content: self)
+        #if DEBUG
+        return RenderDebugView(content: self)
+        #else
+        return self
+        #endif
     }
 }
 
