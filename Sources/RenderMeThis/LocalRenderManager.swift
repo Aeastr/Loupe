@@ -1,5 +1,5 @@
 //
-//  LocalRenderManager.swift.swift
+//  LocalRenderManager.swift
 //  RenderMeThis
 //
 //  Created by Aether on 12/03/2025.
@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@MainActor
 // swift's concurrency model is allergic to implicit cross-actor accesses
 // (this just means swift gets mad if you try to update something on the main thread
 // from a background thread without explicitly telling it that's okay),
@@ -16,6 +15,7 @@ import SwiftUI
 // making the whole class `@MainActor` prevents data race errors
 // (aka, two parts of your code accidentally changing the same thing at the same time and
 // causing weird unpredictable bugs) while keeping things consistent.
+@MainActor
 class LocalRenderManager: ObservableObject {
     var id = UUID()
     @Published var rendered: Bool = false

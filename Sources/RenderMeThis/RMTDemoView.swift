@@ -55,11 +55,14 @@ struct RMTDemoView: View {
                         .tag(2)
                 }
                 .ignoresSafeArea()
+                #if os(iOS)
                 .tabViewStyle(.page(indexDisplayMode: .never))
+                #endif
             }
             .searchable(text: $searchText, prompt: "Search")
             .navigationTitle("RenderMeThis")
             .toolbar {
+                #if os(iOS)
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         isShowingSheet.toggle()
@@ -67,6 +70,15 @@ struct RMTDemoView: View {
                         Image(systemName: "info.circle")
                     }
                 }
+                #else
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: {
+                        isShowingSheet.toggle()
+                    }) {
+                        Image(systemName: "info.circle")
+                    }
+                }
+                #endif
             }
             .sheet(isPresented: $isShowingSheet) {
                 aboutView
