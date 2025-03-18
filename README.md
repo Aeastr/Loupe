@@ -256,6 +256,14 @@ Together, these components allow you to monitor your SwiftUI views for unnecessa
 
 > RenderMeThis is intended for debugging and development purposes. The visual overlay indicating view re‑renders should be disabled or removed in production builds.
 
+### **_VariadicView Back‑Deployment**
+
+RenderMeThis leverages SwiftUI’s internal `_VariadicView` API to backport its render-check functionality on pre‑iOS 18 and pre‑macOS 15 systems. On iOS 18 and macOS 15 (and newer), we use SwiftUI’s native `Group(subviews:transform:)` API, but to support older OS versions we expose `_VariadicView` in the `RenderCheck` wrapper.
+
+When running on older platforms, `RenderCheck` wraps its child views inside a `_VariadicView.Tree` with a custom `_RenderCheckGroup` layout. This layout iterates over each child view and applies the `checkForRender()` modifier, ensuring that render-checking is supported even on devices running older OS versions.
+
+> **Note:** The use of `_VariadicView` is strictly limited to pre‑iOS 18 and pre‑macOS 15 environments. On newer systems, we rely on the native APIs.
+
 ---
 
 ## **License**
