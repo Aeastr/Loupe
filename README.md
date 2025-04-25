@@ -2,7 +2,7 @@
   <img width="360" height="314.65" src="/assets/icon2.png" alt="RenderMeThis Logo">
   <h1><b>RenderMeThis</b></h1>
   <p>
-    A simple SwiftUI debugging tool that reveals exactly when your views re‑render.
+    A simple SwiftUI debugging tool that reveals exactly when your views re-render/compute.
     <br>
     <i>Compatible with iOS 13.0 and later, macOS 10.15 and later</i>
   </p>
@@ -27,14 +27,11 @@
 
 ## **Overview**
 
-RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when your views re-render. By integrating RenderMeThis into your project, each re-render is highlighted by a brief random-color flash via a background Canvas, making it easier to track down unnecessary view updates and optimize performance. Designed for iOS 13.0 and later, RenderMeThis offers both a modifier-based method and a wrapper-based method for flexible integration into your SwiftUI views.
+RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when your views re-render or re-compute.
 
->### **How SwiftUI Rendering Works**
->SwiftUI re-computes a view’s `body` whenever its state changes, but that doesn’t mean it rebuilds the entire UI. Instead, SwiftUI uses a diffing system to compare the new view hierarchy with the old one, updating only the parts that have actually changed. If you break your UI into separate structs and a subview (like a text field) has no state change, it won’t be re-rendered at all—achieving re-render behavior similar to UIKit.
+SwiftUI **re-computes a view’s `body` whenever its state changes**, but that **doesn’t mean it rebuilds the entire UI**. Instead, SwiftUI uses a diffing system to compare the new view hierarchy with the old one, updating only the parts that have actually changed. 
 
-> As of now this works by wrapping your code, or using a modifier, but I'm cooking something a bit more cool for later
-
-![Example](/assets/example.gif)
+RenderMeThis let's you see re-computes (aka re-initalizations) as well as actual re-renders, where the UI is rebuilt
 
 ---
 
@@ -51,195 +48,223 @@ RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when
 
 ## **Usage**
 
-Below are two sets of examples demonstrating how to use RenderMeThis. The first set leverages the **wrapper method** (using `RenderCheck`), available on iOS 13+; the second uses the **modifier method** (using `debugRender()`) for iOS 13+.
-
 ### **Debugging vs. Production**
-> Important: RenderMeThis is a development utility intended solely for debugging purposes. The debug effect—which highlights actual redraws with a Canvas-based random-color flash—is conditionally compiled using Swift’s `#if DEBUG` directive. This means that in production builds, the debugging code is automatically excluded, ensuring that your app remains lean without any unintended visual effects or performance overhead.
+> Important: RenderMeThis is a development utility intended solely for **debugging purposes**. The debug tools are conditionally compiled using Swift’s `#if DEBUG` directive. This means that in production builds, the debugging code is automatically excluded, ensuring that your app remains lean without any unintended visual effects or performance overhead.
 
 > Please ensure that your project’s build settings correctly define the DEBUG flag for development configurations. This will guarantee that the render debugging features are active only during development and testing.
 
-### **Wrapper Method**
+### debugRender()
 
-Wrap your entire view hierarchy with `RenderCheck` to automatically apply render debugging to every subview:
+The `debugRender()` modifier visualizes when SwiftUI re-renders a view by applying a random colored background that changes on each re-render. This is incredibly useful for identifying which parts of your UI are being re-rendered when state changes.
+
+#### Basic Usage
 
 ```swift
-import SwiftUI
-struct ContentView: View {
-    @State private var counter = 0
-    
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    // Entire content is wrapped in RenderCheck.
-                    RenderCheck {
-                        Text("Main Content")
-                            .font(.headline)
-                        
-                        Text("Counter: \(counter)")
-                            .font(.subheadline)
-                        
-                        Button(action: {
-                            counter += 1
-                        }) {
-                            Label("Increment", systemImage: "plus.circle.fill")
-                                .padding()
-                                .background(Color.blue.opacity(0.2))
-                                .cornerRadius(8)
-                        }
-                        
-                        Divider()
-                        
-                        Text("Separate Section")
-                            .font(.headline)
-                        
-                        ContentSubView()
-                    }
-                }
-            }
-            .padding()
-            .navigationTitle("RenderMeThis")
-        }
-    }
-}
-
-struct ContentSubView: View {
-    @State private var counter = 0
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            RenderCheck {
-                Text("Counter: \(counter)")
-                    .font(.subheadline)
-                
-                Button(action: {
-                    counter += 1
-                }) {
-                    Label("Increment", systemImage: "plus.circle.fill")
-                        .padding()
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(8)
-                }
-            }
-        }
-    }
-}
+Text("Hello World")
+    .padding()
+    .debugRender()
 ```
 
+This applies a semi-transparent colored background to the text. The key is that this color will change whenever the view is re-rendered.
 
-### **Modifier Method**
+#### With State Changes
 
-Apply the render debugging effect to individual views using the `debugRender()` modifier:
+When state changes cause a view to re-render, the color will change, making it immediately obvious which views are affected:
 
 ```swift
-import SwiftUI
-struct ContentView: View {
-    @State private var counter = 0
-
+struct CounterView: View {
+    @State private var count = 0
+    
     var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                VStack(spacing: 12) {
-                    Text("Main Content")
-                        .font(.headline)
-                        .debugRender()
-
-                    Text("Counter: \(counter)")
-                        .font(.subheadline)
-                        .debugRender()
-
-                    Button(action: {
-                        counter += 1
-                    }) {
-                        HStack {
-                            Text("Increment")
-                            Image(systemName: "plus.circle.fill")
-                        }
-                        .padding()
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(8)
-                    }
-                    .debugRender()
-
-                    Divider()
-                        .debugRender()
-
-                    Text("Separate Section")
-                        .font(.headline)
-                        .debugRender()
-
-                    ContentSubView()
-                        .debugRender()
-                }
-            }
-            .padding()
-        }
-    }
-}
-
-struct ContentSubView: View {
-    @State private var counter = 0
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Text("Counter: \(counter)")
-                .font(.subheadline)
-                .debugRender()
-
-            Button(action: {
-                counter += 1
-            }) {
-                HStack {
-                    Text("Increment")
-                    Image(systemName: "plus.circle.fill")
-                }
+        VStack {
+            // This text will show a changing background color whenever count changes
+            Text("Count: \(count)")
                 .padding()
-                .background(Color.green.opacity(0.2))
-                .cornerRadius(8)
+                .debugRender()
+            
+            Button("Increment") {
+                count += 1
             }
-            .debugRender()
         }
     }
 }
 ```
+
+In this example, every time the button is tapped, the Text view's background color will change because it depends on `count`.
+
+#### Selective Debugging
+
+You can apply the modifier to specific views to see exactly which ones are being re-rendered:
+
+```swift
+VStack {
+    Text("This will re-render: \(count)")
+        .debugRender() // This background will change color
+    
+    Text("Static text")
+        .debugRender() // This background will NOT change color
+    
+    Button("Increment") {
+        count += 1
+    }
+    .debugRender() // This only changes when the button itself re-renders
+}
+```
+
+#### Wrapper Approach
+
+The wrapper version only applies to the container, not its children:
+
+```swift
+// Only the VStack container gets the colored background
+DebugRender {
+    VStack {
+        Text("Last updated: \(Date().formatted())")
+        Text("Current count: \(count)")
+        Button("Reset") { count = 0 }
+    }
+}
+```
+
+To debug every element individually, apply the modifier to each component:
+
+```swift
+VStack {
+    Text("Updated: \(Date().formatted())")
+        .debugRender() // Gets its own color
+    
+    Text("Count: \(count)")
+        .debugRender() // Gets a different color
+    
+    Button("Reset") { count = 0 }
+        .debugRender() // Button gets its own color
+}
+```
+
+### debugCompute()
+
+The `debugCompute()` modifier highlights when SwiftUI recreates/reinitializes a view by briefly flashing it red. This shows when a view is being re-computed/re-initailized
+
+#### Basic Usage
+
+```swift
+Text("Hello World")
+    .padding()
+    .debugCompute()
+```
+
+This will flash red whenever the view is recreated (not just re-rendered).
+
+#### Interactive UI Elements
+
+Text fields are particularly interesting to debug, as they re-compute on every keystroke:
+
+```swift
+@State private var searchText = ""
+
+TextField("Search...", text: $searchText)
+    .padding()
+    .debugCompute() // Will flash red with EVERY keystroke
+```
+
+The text field flashes because SwiftUI creates a new view instance for each character typed.
+
+#### Dependent Views
+
+Views that depend on changing state will flash when that state changes:
+
+```swift
+Text("Searching for: \(searchText)")
+    .padding()
+    .debugCompute() // Flashes whenever searchText changes
+```
+
+#### Conditional Content
+
+Toggling visibility creates entirely new view instances:
+
+```swift
+@State private var showDetails = false
+
+Button("Toggle Details") {
+    showDetails.toggle()
+}
+.debugCompute() // Flashes when tapped
+
+if showDetails {
+    VStack {
+        Text("These are the details")
+        Text("More information here")
+    }
+    .padding()
+    .debugCompute() // Flashes when appearing/disappearing
+}
+```
+
+#### Nested vs Non-Nested Usage
+
+Applying to a container affects the whole container's behavior:
+
+```swift
+// The entire structure flashes on each keystroke
+VStack {
+    TextField("Type here", text: $searchText) 
+    Text("Preview: \(searchText)")
+    Button("Clear", action: { searchText = "" })
+}
+.debugCompute() // Entire VStack reinitializes with each keystroke
+```
+
+Versus targeting specific components:
+
+```swift
+VStack {
+    // Only this component flashes with each keystroke
+    TextField("Type here", text: $searchText)
+        .debugCompute()
+    
+    // Only flashes when searchText changes
+    Text("Preview: \(searchText)")
+        .debugCompute()
+    
+    // Only flashes when tapped
+    Button("Clear") { searchText = "" }
+        .debugCompute()
+}
+```
+
+#### Wrapper Approach
+
+Like `debugRender()`, the wrapper only applies to the container:
+
+```swift
+DebugCompute {
+    VStack {
+        Text("Header")
+        Text("Content: \(searchText)")
+    }
+} // Only the VStack container flashes red, not each child view
+```
+
+These visualizations help you understand SwiftUI's view lifecycle and optimize your code for better performance by identifying unnecessary view recreations.
 
 ---
 
 ## **Key Components**
 
-- **RenderDebugView**  
-  A SwiftUI wrapper that places a full-size background Canvas to draw a random-color flash each time the view is truly redrawn, indicating actual redraw events.
+- **DebugRender**  
+  A SwiftUI wrapper that uses a Canvas background to draw a random-colored, semi-transparent overlay each time a view is re-rendered. This provides a clear visual indication of which views are actually being re-rendered by SwiftUI's rendering system.
 
-- **RenderCheck**  
-  A convenience wrapper that applies the render debugging effect to multiple subviews. By using `@ViewBuilder`, it accepts and wraps multiple views with the render detection modifier.
+- **DebugCompute**  
+  A debugging wrapper that briefly flashes a red overlay when a view is re-computed/re-initialized (not just re-rendered).
 
-- **Modifier Method**  
-  An extension on `View` called `debugRender()` which wraps any view in a `RenderDebugView`, allowing for quick and simple integration of the render debugging effect.
+- **Extension Methods**  
+  Two extension methods on `View`:
+  - `.debugRender()` - Shows re-renders with changing colored backgrounds
+  - `.debugCompute()` - Shows re-computs/re-initalizations with red flashes
 
----
 
-## **How It Works**
-
-RenderMeThis leverages SwiftUI’s view refresh cycle to visually indicate when views re‑render. Here’s a breakdown of how the different components work together:
-
-### **RenderDebugView**
-
-- **Canvas Flash:**  
-  When SwiftUI actually redraws the view, a background Canvas draws a random solid color full-size behind the content, producing a brief color flash to indicate a real redraw event.
-
-### **RenderCheck**
-
-- **Convenience Wrapper:**  
-  `RenderCheck` uses SwiftUI’s `@ViewBuilder` to accept multiple subviews. It groups them together and applies the `debugRender()` modifier, thereby enabling re‑render detection across an entire view hierarchy without modifying each individual subview.
-
-### **Modifier Extension**
-
-- **Simplified Integration:**  
-  The extension method `debugRender()` on `View` wraps any view in a `RenderDebugView`. This allows you to integrate render detection quickly by simply appending the modifier to your view.
-
-Together, these components allow you to monitor your SwiftUI views for unnecessary or unexpected re‑renders
-
-> RenderMeThis is intended for debugging and development purposes. The visual overlay indicating view re‑renders should be disabled or removed in production builds.
+These components work together to provide a comprehensive visual debugging system for SwiftUI, helping developers understand both the rendering and computation aspects of SwiftUI's view lifecycle.
 
 ### **_VariadicView Back‑Deployment**
 
