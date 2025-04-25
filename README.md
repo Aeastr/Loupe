@@ -27,7 +27,7 @@
 
 ## **Overview**
 
-RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when your views re‑render. By integrating RenderMeThis into your project, each re‑render is highlighted by a brief red flash, making it easier to track down unnecessary view updates and optimize performance. Designed for iOS 13.0 and later, RenderMeThis offers both a modifier-based method and a wrapper-based method for flexible integration into your SwiftUI views.
+RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when your views re-render. By integrating RenderMeThis into your project, each re-render is highlighted by a brief random-color flash via a background Canvas, making it easier to track down unnecessary view updates and optimize performance. Designed for iOS 13.0 and later, RenderMeThis offers both a modifier-based method and a wrapper-based method for flexible integration into your SwiftUI views.
 
 >### **How SwiftUI Rendering Works**
 >SwiftUI re-computes a view’s `body` whenever its state changes, but that doesn’t mean it rebuilds the entire UI. Instead, SwiftUI uses a diffing system to compare the new view hierarchy with the old one, updating only the parts that have actually changed. If you break your UI into separate structs and a subview (like a text field) has no state change, it won’t be re-rendered at all—achieving re-render behavior similar to UIKit.
@@ -49,13 +49,12 @@ RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when
 
 ---
 
-
 ## **Usage**
 
-Below are two sets of examples demonstrating how to use RenderMeThis. The first set leverages the **wrapper method** (using `RenderCheck`), available on iOS 13+; the second uses the **modifier method** (using `checkForRender()`) for iOS 13+.
+Below are two sets of examples demonstrating how to use RenderMeThis. The first set leverages the **wrapper method** (using `RenderCheck`), available on iOS 13+; the second uses the **modifier method** (using `debugRender()`) for iOS 13+.
 
 ### **Debugging vs. Production**
-> Important: RenderMeThis is a development utility intended solely for debugging purposes. The debug overlay—which highlights view re‑renders with a red flash—is conditionally compiled using Swift’s `#if DEBUG` directive. This means that in production builds, the debugging code is automatically excluded, ensuring that your app remains lean without any unintended visual effects or performance overhead.
+> Important: RenderMeThis is a development utility intended solely for debugging purposes. The debug effect—which highlights actual redraws with a Canvas-based random-color flash—is conditionally compiled using Swift’s `#if DEBUG` directive. This means that in production builds, the debugging code is automatically excluded, ensuring that your app remains lean without any unintended visual effects or performance overhead.
 
 > Please ensure that your project’s build settings correctly define the DEBUG flag for development configurations. This will guarantee that the render debugging features are active only during development and testing.
 
@@ -130,7 +129,7 @@ struct ContentSubView: View {
 
 ### **Modifier Method**
 
-Apply the render debugging effect to individual views using the `checkForRender()` modifier:
+Apply the render debugging effect to individual views using the `debugRender()` modifier:
 
 ```swift
 import SwiftUI
@@ -143,11 +142,11 @@ struct ContentView: View {
                 VStack(spacing: 12) {
                     Text("Main Content")
                         .font(.headline)
-                        .checkForRender()
+                        .debugRender()
 
                     Text("Counter: \(counter)")
                         .font(.subheadline)
-                        .checkForRender()
+                        .debugRender()
 
                     Button(action: {
                         counter += 1
@@ -160,17 +159,17 @@ struct ContentView: View {
                         .background(Color.blue.opacity(0.2))
                         .cornerRadius(8)
                     }
-                    .checkForRender()
+                    .debugRender()
 
                     Divider()
-                        .checkForRender()
+                        .debugRender()
 
                     Text("Separate Section")
                         .font(.headline)
-                        .checkForRender()
+                        .debugRender()
 
                     ContentSubView()
-                        .checkForRender()
+                        .debugRender()
                 }
             }
             .padding()
@@ -185,7 +184,7 @@ struct ContentSubView: View {
         VStack(spacing: 12) {
             Text("Counter: \(counter)")
                 .font(.subheadline)
-                .checkForRender()
+                .debugRender()
 
             Button(action: {
                 counter += 1
@@ -198,7 +197,7 @@ struct ContentSubView: View {
                 .background(Color.green.opacity(0.2))
                 .cornerRadius(8)
             }
-            .checkForRender()
+            .debugRender()
         }
     }
 }
@@ -209,16 +208,13 @@ struct ContentSubView: View {
 ## **Key Components**
 
 - **RenderDebugView**  
-  A SwiftUI wrapper that overlays its content with a brief red flash each time the view is re‑initialized. This flash indicates that the view has re‑rendered.
+  A SwiftUI wrapper that places a full-size background Canvas to draw a random-color flash each time the view is truly redrawn, indicating actual redraw events.
 
 - **RenderCheck**  
   A convenience wrapper that applies the render debugging effect to multiple subviews. By using `@ViewBuilder`, it accepts and wraps multiple views with the render detection modifier.
 
-- **LocalRenderManager**  
-  An internal utility responsible for managing the flash state. It triggers a temporary red flash by setting a Boolean flag that controls the overlay’s opacity.
-
 - **Modifier Method**  
-  An extension on `View` called `checkForRender()` which wraps any view in a `RenderDebugView`, allowing for quick and simple integration of the render debugging effect.
+  An extension on `View` called `debugRender()` which wraps any view in a `RenderDebugView`, allowing for quick and simple integration of the render debugging effect.
 
 ---
 
@@ -228,29 +224,18 @@ RenderMeThis leverages SwiftUI’s view refresh cycle to visually indicate when 
 
 ### **RenderDebugView**
 
-- **Initialization Trigger:**  
-  When a view is wrapped in `RenderDebugView`, its initializer is called. This creates a new instance of `LocalRenderManager` and immediately triggers the render flash.
-  
-- **Flash Overlay:**  
-  The view content is overlaid with a red color whose opacity is determined by the `rendered` state from `LocalRenderManager`. When `rendered` is true, a semi‑transparent red tint (30% opacity) appears and then fades out with an ease‑out animation over 0.3 seconds.
-
-### **LocalRenderManager**
-
-- **State Management:**  
-  This manager maintains a Boolean `rendered` property that controls the overlay’s visibility.
-  
-- **Triggering and Reset:**  
-  When `triggerRender()` is called, `rendered` is set to true, causing the red flash. A scheduled task resets `rendered` to false after 0.3 seconds, ensuring that the flash is temporary.
+- **Canvas Flash:**  
+  When SwiftUI actually redraws the view, a background Canvas draws a random solid color full-size behind the content, producing a brief color flash to indicate a real redraw event.
 
 ### **RenderCheck**
 
 - **Convenience Wrapper:**  
-  `RenderCheck` uses SwiftUI’s `@ViewBuilder` to accept multiple subviews. It groups them together and applies the `checkForRender()` modifier, thereby enabling re‑render detection across an entire view hierarchy without modifying each individual subview.
+  `RenderCheck` uses SwiftUI’s `@ViewBuilder` to accept multiple subviews. It groups them together and applies the `debugRender()` modifier, thereby enabling re‑render detection across an entire view hierarchy without modifying each individual subview.
 
 ### **Modifier Extension**
 
 - **Simplified Integration:**  
-  The extension method `checkForRender()` on `View` wraps any view in a `RenderDebugView`. This allows you to integrate render detection quickly by simply appending the modifier to your view.
+  The extension method `debugRender()` on `View` wraps any view in a `RenderDebugView`. This allows you to integrate render detection quickly by simply appending the modifier to your view.
 
 Together, these components allow you to monitor your SwiftUI views for unnecessary or unexpected re‑renders
 
@@ -260,7 +245,7 @@ Together, these components allow you to monitor your SwiftUI views for unnecessa
 
 RenderMeThis leverages SwiftUI’s internal `_VariadicView` API to backport its render-check functionality on pre‑iOS 18 and pre‑macOS 15 systems. On iOS 18 and macOS 15 (and newer), we use SwiftUI’s native `Group(subviews:transform:)` API, but to support older OS versions we expose `_VariadicView` in the `RenderCheck` wrapper.
 
-When running on older platforms, `RenderCheck` wraps its child views inside a `_VariadicView.Tree` with a custom `_RenderCheckGroup` layout. This layout iterates over each child view and applies the `checkForRender()` modifier, ensuring that render-checking is supported even on devices running older OS versions.
+When running on older platforms, `RenderCheck` wraps its child views inside a `_VariadicView.Tree` with a custom `_RenderCheckGroup` layout. This layout iterates over each child view and applies the `debugRender()` modifier, ensuring that render-checking is supported even on devices running older OS versions.
 
 > **Note:** The use of `_VariadicView` is strictly limited to pre‑iOS 18 and pre‑macOS 15 environments. On newer systems, we rely on the native APIs.
 

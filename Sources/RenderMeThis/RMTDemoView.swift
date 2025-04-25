@@ -1,515 +1,367 @@
+//
+//  RenderDebugDemoView.swift
+//  RenderMeThis
+//
+//  Created by Aether on 25/04/2025.
+//
+
 import SwiftUI
 
-@available(iOS 18.0, *)
-@available(macOS 15, *)
-struct RMTDemoView: View {
+@available(iOS 15.0, *)
+public struct RenderDebugDemoView: View {
     @State private var counter = 0
-    @State private var selectedTab = 0
-    @State private var searchText = ""
-    @State private var isShowingSheet = false
+    @State private var text = ""
+    @State private var showExtraView = false
+    @Environment(\.colorScheme) private var colorScheme
     
-    private let tabs = ["Basic", "Controls", "Lists"]
+    public init() {}
     
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Custom segmented control
-                HStack {
-                    ForEach(Array(tabs.enumerated()), id: \.element) { index, tab in
-                        Button(action: {
-                            selectedTab = index
-                        }) {
-                            Text(tab)
-                                .fontWeight(selectedTab == index ? .bold : .regular)
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
-                                .background(
-                                    selectedTab == index ?
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(Color.accentColor.opacity(0.15)) :
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(Color.clear)
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .animation(.spring(), value: selectedTab)
-                    }
+    public var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                headerSection
+                
+                // Info
+                infoSection
+                
+                // Main content
+                VStack(spacing: 16) {
+                    renderDebugSection
+                    computeDebugSectionNE
+                    computeDebugSection
                 }
                 .padding(.horizontal)
-                
-                .checkForRender()
-                .padding(.bottom, 8)
-                
-                Divider()
-                
-                .checkForRender()
-                
-                TabView(selection: $selectedTab) {
-                    basicExamplesView
-                        .tag(0)
-                    
-                    controlsExamplesView
-                        .tag(1)
-                    
-                    listsExampleView
-                        .tag(2)
-                }
-                .ignoresSafeArea()
-                #if os(iOS)
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                #endif
-            }
-            .searchable(text: $searchText, prompt: "Search")
-            .navigationTitle("RenderMeThis")
-            .toolbar {
-                #if os(iOS)
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        isShowingSheet.toggle()
-                    }) {
-                        Image(systemName: "info.circle")
-                    }
-                }
-                #else
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: {
-                        isShowingSheet.toggle()
-                    }) {
-                        Image(systemName: "info.circle")
-                    }
-                }
-                #endif
-            }
-            .sheet(isPresented: $isShowingSheet) {
-                aboutView
-            }
-            
-        }
-    }
-    
-    private var basicExamplesView: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                demoCard("Simple State Update") {
-                    RenderCheck {
-                        Text("This view will flash when counter changes")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        
-                        Text("Counter: \(counter)")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .padding(.vertical, 4)
-                        
-                        Button(action: {
-                            counter += 1
-                        }) {
-                            Label("Increment", systemImage: "plus.circle.fill")
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .background(Color.accentColor.opacity(0.1))
-                                .cornerRadius(12)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .checkForRender()
-                
-                demoCard("Subview State") {
-                    Text("This subview manages its own state")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .checkForRender()
-                    
-                    RMTSubDemoView()
-                        .checkForRender()
-                }
-                .checkForRender()
-                
-                
-                demoCard("Slider Example") {
-                    
-                    RenderCheck {
-                        Text("Slider position: \(Int(sliderValue * 100))")
-                            .font(.subheadline)
-                        
-                        Slider(value: $sliderValue)
-                            .padding(.vertical, 8)
-                            .tint(.accentColor)
-                    }
-                }
-                .checkForRender()
-                
-                
-                RMTSubDemoSliderView()
-                .checkForRender()
-                
-                demoCard("Parent-Child Relationship") {
-                    RenderCheck {
-                        Text("Parent view with counter: \(counter)")
-                            .font(.subheadline)
-                        
-                        Divider()
-                            .padding(.vertical, 8)
-                        
-                        RenderCheck {
-                            Text("Child view (renders with parent)")
-                                .font(.subheadline)
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(8)
-                    }
-                }
-                .checkForRender()
-            }
-            .padding()
-        }
-    }
-    
-        @State var sliderValue: Double = 0.5
-    
-    private var controlsExamplesView: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                demoCard("Toggle Example") {
-                    @State var toggleState = false
-                    
-                    RenderCheck {
-                        Text("Toggle updates trigger renders")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        
-                        Toggle("Toggle State: \(toggleState ? "On" : "Off")", isOn: $toggleState)
-                            .padding(.vertical, 8)
-                    }
-                }
-                
-                demoCard("Text Input") {
-                    @State var textInput = ""
-                    
-                    RenderCheck {
-                        Text("Each keystroke causes a render")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        
-                        TextField("Type something...", text: $textInput)
-                            .padding()
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
-                    }
-                }
-                
-                demoCard("Date Picker") {
-                    @State var selectedDate = Date()
-                    
-                    RenderCheck {
-                        Text("Date updates cause renders")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        
-                        DatePicker("Select date", selection: $selectedDate, displayedComponents: .date)
-                            .datePickerStyle(.compact)
-                            .padding(.vertical, 8)
-                    }
-                }
-            }
-            .padding()
-        }
-    }
-    
-    private var listsExampleView: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                demoCard("List Selection") {
-                    @State var selectedItem: Int? = nil
-                    let items = Array(1...5)
-                    
-                    RenderCheck {
-                        Text("List selection causes renders")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        
-                        ForEach(items, id: \.self) { item in
-                            Button(action: {
-                                selectedItem = item
-                            }) {
-                                HStack {
-                                    Text("Item \(item)")
-                                    Spacer()
-                                    if selectedItem == item {
-                                        Image(systemName: "checkmark")
-                                            .foregroundColor(.accentColor)
-                                    }
-                                }
-                                .padding(.vertical, 8)
-                                .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            
-                            if item != items.last {
-                                Divider()
-                            }
-                        }
-                    }
-                }
-                
-                demoCard("ForEach with ID") {
-                    @State var items = ["Apple", "Banana", "Cherry"]
-                    @State var newItem = ""
-                    
-                    RenderCheck {
-                        Text("Adding items causes renders")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        
-                        HStack {
-                            TextField("New item", text: $newItem)
-                                .padding(8)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(8)
-                            
-                            Button(action: {
-                                if !newItem.isEmpty {
-                                    items.append(newItem)
-                                    newItem = ""
-                                }
-                            }) {
-                                Image(systemName: "plus.circle.fill")
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                        
-                        ForEach(items, id: \.self) { item in
-                            HStack {
-                                Text(item)
-                                Spacer()
-                                Button(action: {
-                                    items.removeAll { $0 == item }
-                                }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.red.opacity(0.7))
-                                }
-                            }
-                            .padding(.vertical, 8)
-                            
-                            if item != items.last {
-                                Divider()
-                            }
-                        }
-                    }
-                }
-            }
-            .padding()
-        }
-    }
-    
-    private var aboutView: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            HStack {
-                Text("About RenderMeThis")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                Button(action: {
-                    isShowingSheet = false
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(.gray)
-                }
-            }
-            
-            Text("RenderMeThis is a SwiftUI debugging tool that visualizes exactly when views re-render. Each re-render is highlighted with a subtle flash effect.")
-                .foregroundStyle(.secondary)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Label("Identify unnecessary renders", systemImage: "eye")
-                Label("Optimize performance", systemImage: "bolt")
-                Label("Debug state updates", systemImage: "wrench.and.screwdriver")
-                Label("Learn SwiftUI's rendering behavior", systemImage: "graduationcap")
             }
             .padding(.vertical)
-            
-            Spacer()
         }
-        .padding()
-        .presentationDetents([.medium])
-    }
-    
-    private func demoCard<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            
-            Text(title)
-                .font(.headline)
-                .padding(.bottom, 4)
-            
-            .checkForRender()
-            
-            content()
-        }
-        .padding()
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(16)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.gray.opacity(0.1), lineWidth: 1)
+        .background(
+            LinearGradient(
+                gradient: backgroundGradient,
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .modifier(ConditionalIgnoresSafeAreaModifier())
         )
     }
-}
-
-@available(iOS 18.0, *)
-@available(macOS 15, *)
-struct RMTSubDemoView: View {
-    @State private var counter = 0
-    @State private var isToggled = false
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            RenderCheck {
-                Text("Subview counter: \(counter)")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.vertical, 4)
-                
-                Toggle("Toggle Test", isOn: $isToggled)
-                    .padding(.vertical, 4)
-                
-                Button(action: {
-                    counter += 1
-                }) {
-                    Label("Increment Subview", systemImage: "plus.circle.fill")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.accentColor.opacity(0.1))
-                        .cornerRadius(12)
-                }
-                .buttonStyle(.plain)
-            }
-        }
-    }
-}
-
-
-@available(iOS 18.0, *)
-@available(macOS 15, *)
-struct RMTSubDemoSliderView: View {
-    @State private var counter = 0.0
-    @State private var isToggled = false
+    // MARK: - UI Components
     
-    
-    var body: some View {
-        
-        demoCard("Slider Subview Example") {
-            
-            VStack(alignment: .leading, spacing: 16) {
-                RenderCheck {
-                    Text("Slider position: \(Int(counter * 100))")
-                        .font(.subheadline)
-                    
-                    Slider(value: $counter)
-                        .padding(.vertical, 8)
-                        .tint(.accentColor)
-                }
-            }
-        }
+    private var backgroundGradient: Gradient {
+        #if os(macOS)
+        let topColor = colorScheme == .dark ? Color.black : Color(NSColor.controlBackgroundColor)
+        let bottomColor = colorScheme == .dark ? Color(NSColor.controlBackgroundColor) : Color(NSColor.windowBackgroundColor)
+        #else
+        let topColor = colorScheme == .dark ? Color.black : Color(uiColor: .systemGray6)
+        let bottomColor = colorScheme == .dark ? Color(uiColor: .systemGray6) : Color(uiColor: .systemBackground)
+        #endif
+        return Gradient(colors: [topColor, bottomColor])
     }
     
-    
-    
-    private func demoCard<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            
-            Text(title)
-                .font(.headline)
+    private var headerSection: some View {
+        VStack(spacing: 8) {
+            #if os(macOS)
+            if #available(macOS 11.0, *) {
+                Image(systemName: "viewfinder")
+                    .font(.system(size: 40))
+                    .foregroundColor(.purple)
+                    .padding(.bottom, 4)
+                    .debugCompute()
+            } else {
+                Text("(icon)")
+                    .foregroundColor(.purple)
+                    .padding(.bottom, 4)
+                    .debugCompute()
+            }
+            #else
+            Image(systemName: "viewfinder")
+                .font(.system(size: 40))
+                .foregroundColor(.purple)
                 .padding(.bottom, 4)
+                .debugCompute()
+            #endif
             
-            .checkForRender()
+            Text("Render Debug Demo")
+                .font(.title)
+                .fontWeight(.bold)
+                .debugCompute()
             
-            content()
+            Text("Visualize when SwiftUI updates your views")
+                .font(.caption)
+                .modifier(SecondaryForegroundStyleModifier())
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+                .debugCompute()
         }
         .padding()
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(16)
-        .overlay(
+        .frame(maxWidth: .infinity)
+        .background(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.gray.opacity(0.1), lineWidth: 1)
+                .fill(sectionBackgroundColor)
+                .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
         )
+        .padding(.horizontal)
+        .debugCompute()
     }
-}
-
-
-struct RMTDemoView_Pre18: View {
-    @State private var counter = 0
-
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-
-                VStack(spacing: 12) {
-                    Text("Main Content")
-                        .font(.headline)
-                        .checkForRender()
-
-                    Text("Counter: \(counter)")
-                        .font(.subheadline)
-                        .checkForRender()
-
-                    Button(action: {
-                        counter += 1
-                    }) {
-                        HStack {
-                            Text("Increment")
-                        }
-                    }
-
-                    .checkForRender()
-
-                    Divider()
-                        .checkForRender()
-
-                    Text("Separate Section")
-                        .font(.headline)
-                        .checkForRender()
-
-                    RMTSubDemoView_Pre18()
-                        .checkForRender()
-                }
-            }
-            .padding()
+    
+    private var infoSection: some View {
+        VStack {
+            Text("Interact with controls to see visual updates")
+                .font(.caption)
+                .modifier(SecondaryForegroundStyleModifier())
+                .debugCompute()
         }
+        .padding()
     }
-}
-
-struct RMTSubDemoView_Pre18: View {
-    @State private var counter = 0
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Text("Counter: \(counter)")
-                .font(.subheadline)
-                .checkForRender()
-
+    
+    // MARK: - Debug Sections
+    
+    private var renderDebugSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("debugRender()")
+                .debugCompute()
+                .font(.headline)
+                .padding(.bottom, 4)
+                .debugRender()
+            
+            Text("Shows redraws with a colored background")
+                .font(.caption)
+                .debugCompute()
+                .modifier(SecondaryForegroundStyleModifier())
+                .padding(.bottom, 8)
+                .debugRender()
+            
+            // This view will show a colored background when redrawn
+            VStack {
+                Text("This text shows counter: \(counter)")
+                    .debugCompute()
+                    .padding()
+                    .debugRender()
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color.white.opacity(0.1))
+            .cornerRadius(12)
+            
             Button(action: {
                 counter += 1
             }) {
-                HStack{
-                    Text("Increment")
+                HStack {
+                    Text("Increment Counter")
+                    Spacer()
+                    Image(systemName: "arrow.clockwise")
                 }
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.purple)
+                .cornerRadius(8)
             }
-            .checkForRender()
+            .buttonStyle(BounceButtonStyle())
+            .padding(5)
+            .debugRender()
+            .debugCompute()
         }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(sectionBackgroundColor)
+                .shadow(color: Color.black.opacity(0.06), radius: 7, x: 0, y: 2)
+        )
+        .debugRender()
+        .debugCompute()
+    }
+    
+    private var computeDebugSectionNE: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("debugCompute() - Non Nested Example")
+                .font(.headline)
+                .padding(.bottom, 4)
+                .debugCompute()
+            
+            Text("Shows when views are reinitialized with a red flash, this one isn't nested, try it out and see how the whole view flashes red, not just this card..")
+                .font(.caption)
+                .modifier(SecondaryForegroundStyleModifier())
+                .padding(.bottom, 8)
+                .debugCompute()
+            
+            // This TextField will recreate on each character typed
+            TextField("Type to see recompute", text: $text)
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(8)
+                .debugCompute()
+            
+                
+            Text("It's not ALL bad though, these are just recomputes/initalizatons, not redraws")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .debugCompute()
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(sectionBackgroundColor)
+                .shadow(color: Color.black.opacity(0.06), radius: 7, x: 0, y: 2)
+        )
+        .debugCompute()
+    }
+    
+    private var computeDebugSection: some View {
+        NestedComputeExample(externalText: $text)
+        .debugCompute()
+    }
+    
+    // Helper computed property for section background colors
+    private var sectionBackgroundColor: Color {
+        #if os(macOS)
+        return colorScheme == .dark ? Color(NSColor.darkGray) : Color(NSColor.windowBackgroundColor)
+        #else
+        return colorScheme == .dark ? Color(uiColor: .systemGray5) : Color(uiColor: .systemBackground)
+        #endif
     }
 }
 
-@available(iOS 18.0, *)
-@available(macOS 15, *)
-#Preview("Wrapper") {
-    RMTDemoView()
+struct NestedComputeExample: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var text = ""
+    @Binding var externalText: String
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("debugCompute() - Nested Example")
+                .font(.headline)
+                .padding(.bottom, 4)
+                .debugCompute()
+            
+            Text("Shows when views are reinitialized with a red flash, this one **is** nested, try it out, you'll see only this card flashes, the recompute is local to this card, unless you use a binding")
+                .font(.caption)
+                .modifier(SecondaryForegroundStyleModifier())
+                .padding(.bottom, 8)
+                .debugCompute()
+            
+            // This TextField will recreate on each character typed
+            TextField("Type to see recompute", text: $text)
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(8)
+                .debugCompute()
+            
+            // This TextField will recreate on each character typed
+            TextField("Type to see recompute with binding", text: $externalText)
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(8)
+                .debugCompute()
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(sectionBackgroundColor)
+                .shadow(color: Color.black.opacity(0.06), radius: 7, x: 0, y: 2)
+        )
+        .debugCompute()
+    }
+    
+    // Helper computed property for section background colors
+    private var sectionBackgroundColor: Color {
+        #if os(macOS)
+        return colorScheme == .dark ? Color(NSColor.darkGray) : Color(NSColor.windowBackgroundColor)
+        #else
+        return colorScheme == .dark ? Color(uiColor: .systemGray5) : Color(uiColor: .systemBackground)
+        #endif
+    }
 }
 
-#Preview("Modifier") {
-    RMTDemoView_Pre18()
+// MARK: - Additional Components and Compatibility Modifiers
+
+// Helper Modifier to conditionally apply ignoresSafeArea
+struct ConditionalIgnoresSafeAreaModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        #if os(macOS)
+        if #available(macOS 11.0, *) {
+            content.ignoresSafeArea()
+        } else {
+            content // No equivalent for macOS 10.15
+        }
+        #elseif os(iOS)
+        if #available(iOS 14.0, *) {
+            content.ignoresSafeArea()
+        } else {
+            content // Not available before iOS 14
+        }
+        #elseif os(tvOS)
+        if #available(tvOS 14.0, *) {
+            content.ignoresSafeArea()
+        } else {
+            content // Not available before tvOS 14
+        }
+        #elseif os(watchOS)
+        if #available(watchOS 7.0, *) {
+            content.ignoresSafeArea()
+        } else {
+            content // Not available before watchOS 7
+        }
+        #else
+        content
+        #endif
+    }
+}
+
+// Helper Modifier for Secondary Foreground Color Compatibility
+struct SecondaryForegroundStyleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        #if os(watchOS) // watchOS has different availability
+            if #available(watchOS 8.0, *) {
+                content.foregroundColor(.secondary)
+            } else {
+                content // No direct equivalent on watchOS 6/7?
+            }
+        #elseif os(macOS)
+            if #available(macOS 11.0, *) {
+                content.foregroundColor(.secondary)
+            } else {
+                // Fallback for macOS 10.15
+                content.foregroundColor(Color(NSColor.secondaryLabelColor))
+            }
+        #else // iOS, tvOS
+            if #available(iOS 15.0, tvOS 15.0, *) {
+                 content.foregroundStyle(.secondary) // Use newer API where available
+            } else {
+                 content.foregroundColor(.secondary) // Fallback for iOS 13/14
+            }
+        #endif
+    }
+}
+
+// Helper Modifier for Arrow Icon Foreground Color Compatibility
+struct ArrowIconForegroundStyleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        #if os(macOS)
+        if #available(macOS 12.0, *) {
+            // Use tertiaryLabelColor directly where available
+            content.foregroundColor(Color(nsColor: .tertiaryLabelColor))
+        } else {
+            // Fallback for macOS 10.15/11
+            content.foregroundColor(Color(NSColor.darkGray))
+        }
+        #else // iOS, tvOS, watchOS
+        if #available(iOS 15.0, *) {
+            // Use systemGray3 for other platforms
+            content.foregroundColor(Color(uiColor: .systemGray3))
+        }
+        #endif
+    }
+}
+
+struct BounceButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.smooth, value: configuration.isPressed)
+            .opacity(configuration.isPressed ? 0.5 : 1.0)
+    }
+}
+
+// MARK: - Previews
+
+@available(iOS 15.0, *)
+struct RenderDebugDemoView_Previews: PreviewProvider {
+    static var previews: some View {
+        RenderDebugDemoView()
+    }
 }

@@ -1,4 +1,12 @@
 //
+//  RenderDebugView 2.swift
+//  RenderMeThis
+//
+//  Created by Aether on 25/04/2025.
+//
+
+
+//
 //  RenderDebugView.swift
 //  RenderMeThis
 //
@@ -10,7 +18,7 @@ import SwiftUI
 /// A debugging wrapper that highlights when a view is re‑initialized.
 /// Because SwiftUI views are value types and are recreated on refresh,
 /// the initializer triggers the visual effect each time.
-struct RenderDebugView<Content: View>: View {
+struct DebugCompute<Content: View>: View {
     let content: Content
     @ObservedObject private var renderManager: LocalRenderManager
     
@@ -34,17 +42,11 @@ struct RenderDebugView<Content: View>: View {
 
 public extension View {
     /// Wraps the view in a debug wrapper that highlights render updates.
-    func checkForRender() -> some View {
+    func debugCompute() -> some View {
         #if DEBUG
-        return RenderDebugView(content: self)
+        return DebugCompute(content: self)
         #else
         return self
         #endif
     }
-}
-
-@available(iOS 18.0, *)
-@available(macOS 15, *)
-#Preview("Wrapper") {
-    RMTDemoView()
 }
