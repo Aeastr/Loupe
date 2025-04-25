@@ -4,7 +4,7 @@
   <p>
     A simple SwiftUI debugging tool that reveals exactly when your views re-render/compute.
     <br>
-    <i>Compatible with iOS 13.0 and later, macOS 10.15 and later</i>
+    <i>Compatible with iOS 15.0 and later, macOS 12 and later</i>
   </p>
 </div>
 
@@ -13,10 +13,10 @@
     <img src="https://img.shields.io/badge/Swift-5.9%20%7C%206-orange.svg" alt="Swift Version">
   </a>
   <a href="https://www.apple.com/ios/">
-    <img src="https://img.shields.io/badge/iOS-13%2B-blue.svg" alt="iOS">
+    <img src="https://img.shields.io/badge/iOS-15%2B-blue.svg" alt="iOS">
   </a>
   <a href="https://www.apple.com/macos/">
-    <img src="https://img.shields.io/badge/macOS-10.15%2B-blue.svg" alt="macOS">
+    <img src="https://img.shields.io/badge/macOS-12%2B-blue.svg" alt="macOS">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
@@ -266,6 +266,8 @@ These visualizations help you understand SwiftUI's view lifecycle and optimize y
 
 These components work together to provide a comprehensive visual debugging system for SwiftUI, helping developers understand both the rendering and computation aspects of SwiftUI's view lifecycle.
 
+---
+
 ### **_VariadicView Back‑Deployment**
 
 RenderMeThis leverages SwiftUI’s internal `_VariadicView` API to backport its render-check functionality on pre‑iOS 18 and pre‑macOS 15 systems. On iOS 18 and macOS 15 (and newer), we use SwiftUI’s native `Group(subviews:transform:)` API, but to support older OS versions we expose `_VariadicView` in the `RenderCheck` wrapper.
@@ -279,3 +281,7 @@ When running on older platforms, `RenderCheck` wraps its child views inside a `_
 ## **License**
 
 RenderMeThis is available under the MIT license. See the [LICENSE](LICENSE) file for more information.
+
+---
+
+<p align="center">Built with 🍏🔄🕵️‍♂️ by Aether</p>
