@@ -41,7 +41,7 @@ RenderMeThis let's you see re-computes (aka re-initalizations) as well as actual
 
 1. In Xcode, navigate to **File > Add Packages...**
 2. Enter the repository URL:  
-   `https://github.com/Aeastr/RenderMeThis`
+   `https://github.com/Aeastr/RenderMeThis.git`
 3. Follow the prompts to add the package to your project.
 
 ---
