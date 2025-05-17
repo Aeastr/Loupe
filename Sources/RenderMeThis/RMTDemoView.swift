@@ -51,6 +51,9 @@ public struct RenderDebugDemoView: View {
         #if os(macOS)
         let topColor = colorScheme == .dark ? Color.black : Color(NSColor.controlBackgroundColor)
         let bottomColor = colorScheme == .dark ? Color(NSColor.controlBackgroundColor) : Color(NSColor.windowBackgroundColor)
+        #elseif os(tvOS)
+        let topColor = colorScheme == .dark ? Color.black : Color(uiColor: .darkGray)
+        let bottomColor = colorScheme == .dark ? Color(uiColor: .darkGray) : Color(uiColor: .lightGray)
         #else
         let topColor = colorScheme == .dark ? Color.black : Color(uiColor: .systemGray6)
         let bottomColor = colorScheme == .dark ? Color(uiColor: .systemGray6) : Color(uiColor: .systemBackground)
@@ -213,6 +216,8 @@ public struct RenderDebugDemoView: View {
     private var sectionBackgroundColor: Color {
         #if os(macOS)
         return colorScheme == .dark ? Color(NSColor.darkGray) : Color(NSColor.windowBackgroundColor)
+        #elseif os(tvOS)
+        return colorScheme == .dark ? Color(uiColor: .darkGray) : Color(uiColor: .lightGray)
         #else
         return colorScheme == .dark ? Color(uiColor: .systemGray5) : Color(uiColor: .systemBackground)
         #endif
@@ -261,6 +266,8 @@ struct NestedComputeExample: View {
     private var sectionBackgroundColor: Color {
         #if os(macOS)
         return colorScheme == .dark ? Color(NSColor.darkGray) : Color(NSColor.windowBackgroundColor)
+        #elseif os(tvOS)
+        return colorScheme == .dark ? Color(uiColor: .darkGray) : Color(uiColor: .lightGray)
         #else
         return colorScheme == .dark ? Color(uiColor: .systemGray5) : Color(uiColor: .systemBackground)
         #endif
@@ -339,7 +346,9 @@ struct ArrowIconForegroundStyleModifier: ViewModifier {
             // Fallback for macOS 10.15/11
             content.foregroundColor(Color(NSColor.darkGray))
         }
-        #else // iOS, tvOS, watchOS
+        #elseif os(tvOS)
+        content.foregroundColor(Color(uiColor: .tertiaryLabel))
+        #else // iOS, watchOS
         if #available(iOS 15.0, *) {
             // Use systemGray3 for other platforms
             content.foregroundColor(Color(uiColor: .systemGray3))
