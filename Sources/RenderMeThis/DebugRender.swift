@@ -49,6 +49,7 @@ public extension View {
     func debugRender() -> some View {
 #if DEBUG
         DebugRender(content: self)
+        
 #else
         self
 #endif
