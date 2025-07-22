@@ -16,7 +16,10 @@
     <img src="https://img.shields.io/badge/iOS-15%2B-blue.svg" alt="iOS">
   </a>
   <a href="https://www.apple.com/macos/">
-    <img src="https://img.shields.io/badge/macOS-12%2B-blue.svg" alt="macOS">
+    <img src="https://img.shields.io/badge/macOS-12%2B-blue.svg" alt="tvOS">
+  </a>
+  <a href="https://www.apple.com/tvos/">
+    <img src="https://img.shields.io/badge/tvOS-15%2B-blue.svg" alt="macOS">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">

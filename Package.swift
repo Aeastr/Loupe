@@ -7,6 +7,7 @@ let package = Package(
     name: "RenderMeThis",
     platforms: [
         .iOS(.v15),
+        .tvOS(.v15),
         .macOS(.v12)
     ],
     products: [

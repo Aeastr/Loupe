@@ -22,7 +22,7 @@ public struct RenderCheck<Content: View>: View {
     public var body: some View {
         // This is just passing the subviews along untouched (I hope??)
         // (the real work happens in `.debugRender()`)
-        if #available(macOS 15, iOS 18, *) {
+        if #available(macOS 15, iOS 18, tvOS 18, *) {
             Group(subviews: content) { subviewsCollection in
                 subviewsCollection
             }
