@@ -157,7 +157,7 @@ This will flash red whenever the view is recreated (not just re-rendered).
 
 #### Interactive UI Elements
 
-Text fields are particularly interesting to debug, as they re-compute on every keystroke:
+Text fields are a particularly good example, as they re-compute on every keystroke:
 
 ```swift
 @State private var searchText = ""
