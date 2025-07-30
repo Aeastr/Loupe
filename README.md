@@ -3,23 +3,27 @@
   <h1><b>RenderMeThis</b></h1>
   <p>
     A simple SwiftUI debugging tool that reveals exactly when your views re-render/compute.
-    <br>
-    <i>Compatible with iOS 15.0 and later, macOS 12 and later</i>
   </p>
 </div>
 
 <div align="center">
   <a href="https://swift.org">
-    <img src="https://img.shields.io/badge/Swift-5.9%20%7C%206-orange.svg" alt="Swift Version">
+    <img src="https://img.shields.io/badge/Swift-6-orange.svg" alt="Swift Version">
   </a>
   <a href="https://www.apple.com/ios/">
     <img src="https://img.shields.io/badge/iOS-15%2B-blue.svg" alt="iOS">
   </a>
   <a href="https://www.apple.com/macos/">
-    <img src="https://img.shields.io/badge/macOS-12%2B-blue.svg" alt="tvOS">
+    <img src="https://img.shields.io/badge/macOS-12%2B-blue.svg" alt="macOS">
   </a>
   <a href="https://www.apple.com/tvos/">
-    <img src="https://img.shields.io/badge/tvOS-15%2B-blue.svg" alt="macOS">
+    <img src="https://img.shields.io/badge/tvOS-15%2B-blue.svg" alt="tvOS">
+  </a>
+  <a href="https://www.apple.com/visionos/">
+    <img src="https://img.shields.io/badge/visionOS-1%2B-purple.svg" alt="visionOS">
+  </a>
+  <a href="https://www.apple.com/watchos/">
+    <img src="https://img.shields.io/badge/watchOS-8%2B-red.svg" alt="watchOS">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
@@ -160,7 +164,7 @@ This will flash red whenever the view is recreated (not just re-rendered).
 
 #### Interactive UI Elements
 
-Text fields are particularly interesting to debug, as they re-compute on every keystroke:
+Text fields are a particularly good example, as they re-compute on every keystroke:
 
 ```swift
 @State private var searchText = ""
