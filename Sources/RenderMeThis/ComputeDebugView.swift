@@ -1,16 +1,8 @@
 //
-//  RenderDebugView 2.swift
+//  ComputeDebugView.swift
 //  RenderMeThis
 //
 //  Created by Aether on 25/04/2025.
-//
-
-
-//
-//  RenderDebugView.swift
-//  RenderMeThis
-//
-//  Created by Aether on 12/03/2025.
 //
 
 import SwiftUI

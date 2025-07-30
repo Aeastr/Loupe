@@ -384,4 +384,3 @@ struct RenderDebugDemoView_Previews: PreviewProvider {
         RenderDebugDemoView()
     }
 }
-
