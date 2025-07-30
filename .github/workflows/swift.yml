@@ -1,0 +1,103 @@
+name: Test Swift Package on All Platforms
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test Swift 6.0 on ${{ matrix.platform }} (${{ matrix.config }})
+    runs-on: macos-latest # All Apple platform testing requires macOS
+
+    strategy:
+      matrix:
+        platform: [ios, macos, tvos, visionos]
+        config: [debug, release]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Select Xcode (latest)
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: 'latest'
+
+    - name: Setup Swift 6.0
+      uses: SwiftyLab/setup-swift@latest
+      with:
+        swift-version: '6.0'
+
+    - name: Check Swift version
+      run: swift --version
+
+    - name: Find Simulator for ${{ matrix.platform }}
+      id: find_simulator
+      run: |
+        case "${{ matrix.platform }}" in
+          ios)
+            PLATFORM_NAME="iOS"
+            RUNTIME_FILTER="ios"
+            SDK_NAME="iphonesimulator"
+            ;;
+          tvos)
+            PLATFORM_NAME="tvOS"
+            RUNTIME_FILTER="tvos"
+            SDK_NAME="appletvsimulator"
+            ;;
+          visionos)
+            PLATFORM_NAME="visionOS"
+            RUNTIME_FILTER="visionos"
+            SDK_NAME="xrsimulator"
+            ;;
+          macos)
+            PLATFORM_NAME="macOS"
+            # macOS doesn't need simulator
+            echo "SIMULATOR_DESTINATION=platform=macOS" >> $GITHUB_OUTPUT
+            echo "SDK_PATH=$(xcrun --sdk macosx --show-sdk-path)" >> $GITHUB_OUTPUT
+            exit 0
+            ;;
+        esac
+
+        echo "Finding $PLATFORM_NAME simulator..."
+        
+        # Find an available simulator runtime and device
+        RUNTIME_ID=$(xcrun simctl list runtimes $RUNTIME_FILTER --json | jq -r '.runtimes[0].identifier')
+        if [ -z "$RUNTIME_ID" ] || [ "$RUNTIME_ID" == "null" ]; then
+          echo "::error::No $PLATFORM_NAME runtime found."
+          exit 1
+        fi
+        
+        DEVICE_ID=$(xcrun simctl list devices --json | jq -r --arg RT_ID "$RUNTIME_ID" '.devices[$RT_ID] | map(select(.isAvailable)) | .[0].udid')
+        if [ -z "$DEVICE_ID" ] || [ "$DEVICE_ID" == "null" ]; then
+          echo "::error::No available $PLATFORM_NAME simulator device found for runtime $RUNTIME_ID."
+          exit 1
+        fi
+        
+        echo "Found $PLATFORM_NAME Simulator Runtime: $RUNTIME_ID"
+        echo "Found $PLATFORM_NAME Simulator Device UDID: $DEVICE_ID"
+        echo "SIMULATOR_DESTINATION=platform=$PLATFORM_NAME Simulator,id=$DEVICE_ID" >> $GITHUB_OUTPUT
+        echo "SDK_PATH=$(xcrun --sdk $SDK_NAME --show-sdk-path)" >> $GITHUB_OUTPUT
+
+    - name: Build and Test ${{ matrix.platform }} (${{ matrix.config }})
+      run: |
+        if [ "${{ matrix.platform }}" == "macos" ]; then
+          echo "Building for macOS..."
+          echo "Using destination: ${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}"
+          xcodebuild build -scheme Portal -sdk "${{ steps.find_simulator.outputs.SDK_PATH }}" -destination "${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}" SWIFT_VERSION=6.0
+        else
+          echo "Building for ${{ matrix.platform }} simulator..."
+          echo "Using simulator destination: ${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}"
+          xcodebuild build -scheme Portal -sdk "${{ steps.find_simulator.outputs.SDK_PATH }}" -destination "${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}" SWIFT_VERSION=6.0
+        fi
+
+    - name: List available simulators (debug info)
+      if: failure()
+      run: |
+        echo "Available runtimes:"
+        xcrun simctl list runtimes
+        echo ""
+        echo "Available devices:"
+        xcrun simctl list devices
