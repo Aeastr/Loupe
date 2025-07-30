@@ -17,7 +17,6 @@ struct DebugCompute<Content: View>: View {
     init(content: Content) {
         self.content = content
         self.renderManager = LocalRenderManager()
-        print("RenderDebugView init triggered")
         renderManager.triggerRender()
     }
     
