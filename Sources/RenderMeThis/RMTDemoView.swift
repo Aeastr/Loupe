@@ -51,6 +51,12 @@ public struct RenderDebugDemoView: View {
         #if os(macOS)
         let topColor = colorScheme == .dark ? Color.black : Color(NSColor.controlBackgroundColor)
         let bottomColor = colorScheme == .dark ? Color(NSColor.controlBackgroundColor) : Color(NSColor.windowBackgroundColor)
+        #elseif os(tvOS)
+        let topColor = colorScheme == .dark ? Color.black : Color.gray.opacity(0.3)
+        let bottomColor = colorScheme == .dark ? Color.gray.opacity(0.3) : Color.black
+        #elseif os(watchOS)
+        let topColor = colorScheme == .dark ? Color.black : Color.gray.opacity(0.2)
+        let bottomColor = colorScheme == .dark ? Color.gray.opacity(0.1) : Color.black
         #else
         let topColor = colorScheme == .dark ? Color.black : Color(uiColor: .systemGray6)
         let bottomColor = colorScheme == .dark ? Color(uiColor: .systemGray6) : Color(uiColor: .systemBackground)
@@ -213,6 +219,10 @@ public struct RenderDebugDemoView: View {
     private var sectionBackgroundColor: Color {
         #if os(macOS)
         return colorScheme == .dark ? Color(NSColor.darkGray) : Color(NSColor.windowBackgroundColor)
+        #elseif os(tvOS)
+        return colorScheme == .dark ? Color.gray.opacity(0.2) : Color.black.opacity(0.1)
+        #elseif os(watchOS)
+        return colorScheme == .dark ? Color.gray.opacity(0.2) : Color.gray.opacity(0.05)
         #else
         return colorScheme == .dark ? Color(uiColor: .systemGray5) : Color(uiColor: .systemBackground)
         #endif
@@ -261,6 +271,10 @@ struct NestedComputeExample: View {
     private var sectionBackgroundColor: Color {
         #if os(macOS)
         return colorScheme == .dark ? Color(NSColor.darkGray) : Color(NSColor.windowBackgroundColor)
+        #elseif os(tvOS)
+        return colorScheme == .dark ? Color.gray.opacity(0.2) : Color.black.opacity(0.1)
+        #elseif os(watchOS)
+        return colorScheme == .dark ? Color.gray.opacity(0.2) : Color.gray.opacity(0.05)
         #else
         return colorScheme == .dark ? Color(uiColor: .systemGray5) : Color(uiColor: .systemBackground)
         #endif
@@ -339,11 +353,16 @@ struct ArrowIconForegroundStyleModifier: ViewModifier {
             // Fallback for macOS 10.15/11
             content.foregroundColor(Color(NSColor.darkGray))
         }
-        #else // iOS, tvOS, watchOS
+        #elseif os(tvOS)
+        content.foregroundColor(.gray)
+        #else // iOS, watchOS
+        #if os(watchOS)
+        content.foregroundColor(.gray)
+        #else
         if #available(iOS 15.0, *) {
-            // Use systemGray3 for other platforms
             content.foregroundColor(Color(uiColor: .systemGray3))
         }
+        #endif
         #endif
     }
 }
@@ -365,3 +384,4 @@ struct RenderDebugDemoView_Previews: PreviewProvider {
         RenderDebugDemoView()
     }
 }
+
