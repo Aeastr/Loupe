@@ -8,13 +8,13 @@ on:
 
 jobs:
   test:
-    name: Test Swift 6.0 on ${{ matrix.platform }} (${{ matrix.config }})
+    name: Test Swift 6.0 on ${{ matrix.platform }}
     runs-on: macos-latest # All Apple platform testing requires macOS
 
     strategy:
+      fail-fast: false
       matrix:
-        platform: [ios, macos, tvos, visionos]
-        config: [debug, release]
+        platform: [ios, macos, tvos, visionos, watchos]
 
     steps:
     - name: Checkout repository
@@ -42,6 +42,11 @@ jobs:
             RUNTIME_FILTER="ios"
             SDK_NAME="iphonesimulator"
             ;;
+          watchos)
+            PLATFORM_NAME="watchOS"
+            RUNTIME_FILTER="watchos"
+            SDK_NAME="watchsimulator"
+          ;;
           tvos)
             PLATFORM_NAME="tvOS"
             RUNTIME_FILTER="tvos"
@@ -81,16 +86,16 @@ jobs:
         echo "SIMULATOR_DESTINATION=platform=$PLATFORM_NAME Simulator,id=$DEVICE_ID" >> $GITHUB_OUTPUT
         echo "SDK_PATH=$(xcrun --sdk $SDK_NAME --show-sdk-path)" >> $GITHUB_OUTPUT
 
-    - name: Build and Test ${{ matrix.platform }} (${{ matrix.config }})
+    - name: Build and Test ${{ matrix.platform }}
       run: |
         if [ "${{ matrix.platform }}" == "macos" ]; then
           echo "Building for macOS..."
           echo "Using destination: ${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}"
-          xcodebuild build -scheme Portal -sdk "${{ steps.find_simulator.outputs.SDK_PATH }}" -destination "${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}" SWIFT_VERSION=6.0
+          xcodebuild build -scheme RenderMeThis -sdk "${{ steps.find_simulator.outputs.SDK_PATH }}" -destination "${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}" SWIFT_VERSION=6.0
         else
           echo "Building for ${{ matrix.platform }} simulator..."
           echo "Using simulator destination: ${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}"
-          xcodebuild build -scheme Portal -sdk "${{ steps.find_simulator.outputs.SDK_PATH }}" -destination "${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}" SWIFT_VERSION=6.0
+          xcodebuild build -scheme RenderMeThis -sdk "${{ steps.find_simulator.outputs.SDK_PATH }}" -destination "${{ steps.find_simulator.outputs.SIMULATOR_DESTINATION }}" SWIFT_VERSION=6.0
         fi
 
     - name: List available simulators (debug info)
