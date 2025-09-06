@@ -12,30 +12,38 @@ import SwiftUI
 /// the initializer triggers the visual effect each time.
 struct DebugCompute<Content: View>: View {
     let content: Content
+    let enabled: Bool
     @ObservedObject private var renderManager: LocalRenderManager
     
-    init(content: Content) {
+    init(content: Content, enabled: Bool = true) {
         self.content = content
+        self.enabled = enabled
         self.renderManager = LocalRenderManager()
-        renderManager.triggerRender()
+        if enabled {
+            renderManager.triggerRender()
+        }
     }
     
     var body: some View {
         content
             .overlay(
-                Color.red
-                    .opacity(renderManager.rendered ? 0.3 : 0.0)
-                    .animation(.easeOut(duration: 0.3), value: renderManager.rendered)
-                    .allowsHitTesting(false)
+                Group {
+                    if enabled {
+                        Color.red
+                            .opacity(renderManager.rendered ? 0.3 : 0.0)
+                            .animation(.easeOut(duration: 0.3), value: renderManager.rendered)
+                            .allowsHitTesting(false)
+                    }
+                }
             )
     }
 }
 
 public extension View {
     /// Wraps the view in a debug wrapper that highlights render updates.
-    func debugCompute() -> some View {
+    func debugCompute(enabled: Bool = true) -> some View {
         #if DEBUG
-        return DebugCompute(content: self)
+        return DebugCompute(content: self, enabled: enabled)
         #else
         return self
         #endif
