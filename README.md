@@ -1,8 +1,8 @@
 <div align="center">
-  <img width="270" height="270" src="/assets/icon.png" alt="RenderMeThis Logo">
-  <h1><b>RenderMeThis</b></h1>
+  <img width="270" height="270" src="/assets/icon.png" alt="Loupe Logo">
+  <h1><b>Loupe</b></h1>
   <p>
-    A simple SwiftUI debugging tool that reveals exactly when your views re-render/compute.
+    A comprehensive SwiftUI debugging toolkit for visualizing renders, layouts, and measurements.
   </p>
 </div>
 
@@ -11,19 +11,19 @@
     <img src="https://img.shields.io/badge/Swift-6-orange.svg" alt="Swift Version">
   </a>
   <a href="https://www.apple.com/ios/">
-    <img src="https://img.shields.io/badge/iOS-15%2B-blue.svg" alt="iOS">
+    <img src="https://img.shields.io/badge/iOS-17%2B-blue.svg" alt="iOS">
   </a>
   <a href="https://www.apple.com/macos/">
-    <img src="https://img.shields.io/badge/macOS-12%2B-blue.svg" alt="macOS">
+    <img src="https://img.shields.io/badge/macOS-14%2B-blue.svg" alt="macOS">
   </a>
   <a href="https://www.apple.com/tvos/">
-    <img src="https://img.shields.io/badge/tvOS-15%2B-blue.svg" alt="tvOS">
+    <img src="https://img.shields.io/badge/tvOS-17%2B-blue.svg" alt="tvOS">
   </a>
   <a href="https://www.apple.com/visionos/">
     <img src="https://img.shields.io/badge/visionOS-1%2B-purple.svg" alt="visionOS">
   </a>
   <a href="https://www.apple.com/watchos/">
-    <img src="https://img.shields.io/badge/watchOS-8%2B-red.svg" alt="watchOS">
+    <img src="https://img.shields.io/badge/watchOS-10%2B-red.svg" alt="watchOS">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
@@ -34,11 +34,15 @@
 
 ## **Overview**
 
-RenderMeThis is a SwiftUI debugging utility that helps you pinpoint exactly when your views re-render or re-compute.
+**Loupe** is a SwiftUI debugging toolkit that helps you inspect, measure, and understand your UI at runtime. Like looking through a jeweler's loupe, it provides precise visibility into layout behavior, rendering patterns, and view geometry.
 
-SwiftUI **re-computes a view’s `body` whenever its state changes**, but that **doesn’t mean it rebuilds the entire UI**. Instead, SwiftUI uses a diffing system to compare the new view hierarchy with the old one, updating only the parts that have actually changed. 
+### What Can Loupe Do?
 
-RenderMeThis let's you see re-computes (aka re-initalizations) as well as actual re-renders, where the UI is rebuilt
+- 🎨 **Visualize render cycles** - See exactly when SwiftUI re-renders or re-computes views
+- 📐 **Measure layouts** - Display bounds, safe area insets, and precise dimensions
+- 📍 **Track positions** - Monitor coordinate positions with draggable overlays
+- 🔲 **Analyze grids** - Overlay perfect square grids for alignment checking
+- 🎯 **Debug container shapes** - Visualize ConcentricRectangle behavior (iOS 26+)
 
 ---
 
@@ -47,248 +51,308 @@ RenderMeThis let's you see re-computes (aka re-initalizations) as well as actual
 ### Swift Package Manager
 
 1. In Xcode, navigate to **File > Add Packages...**
-2. Enter the repository URL:  
-   `https://github.com/Aeastr/RenderMeThis.git`
+2. Enter the repository URL:
+   `https://github.com/Aeastr/SwiftUI-Loupe.git`
 3. Follow the prompts to add the package to your project.
 
 ---
 
-## **Usage**
+## **Features**
 
-### **Debugging vs. Production**
-> Important: RenderMeThis is a development utility intended solely for **debugging purposes**. The debug tools are conditionally compiled using Swift’s `#if DEBUG` directive. This means that in production builds, the debugging code is automatically excluded, ensuring that your app remains lean without any unintended visual effects or performance overhead.
+### 🎨 Render Debugging
 
-> Please ensure that your project’s build settings correctly define the DEBUG flag for development configurations. This will guarantee that the render debugging features are active only during development and testing.
+#### `.debugRender()` - Visualize Re-renders
 
-### debugRender()
-
-The `debugRender()` modifier visualizes when SwiftUI re-renders a view by applying a random colored background that changes on each re-render. This is incredibly useful for identifying which parts of your UI are being re-rendered when state changes.
-
-#### Basic Usage
+Shows when SwiftUI re-renders a view by applying a random colored background that changes on each re-render.
 
 ```swift
-Text("Hello World")
-    .padding()
+Text("Count: \(count)")
     .debugRender()
 ```
 
-This applies a semi-transparent colored background to the text. The key is that this color will change whenever the view is re-rendered.
+SwiftUI **re-computes a view's `body` whenever its state changes**, but that **doesn't mean it rebuilds the entire UI**. SwiftUI uses a diffing system to compare the new view hierarchy with the old one, updating only the parts that have actually changed.
 
-#### With State Changes
+#### `.debugCompute()` - Visualize Re-computations
 
-When state changes cause a view to re-render, the color will change, making it immediately obvious which views are affected:
+Shows when SwiftUI recreates/reinitializes a view by briefly flashing it red.
+
+```swift
+TextField("Search...", text: $searchText)
+    .debugCompute()
+```
+
+The view flashes because SwiftUI creates a new view instance for each state change.
+
+#### `RenderCheck` - Batch Render Debugging
+
+Applies render debugging to all subviews automatically.
+
+```swift
+RenderCheck {
+    VStack {
+        Text("View 1")
+        Text("View 2")
+        Text("View 3")
+    }
+}
+```
+
+---
+
+### 📐 Layout Inspection
+
+#### `VisualLayoutGuide` - Complete Layout Information
+
+A comprehensive debugging overlay showing bounds, safe area insets, and dimensions.
+
+```swift
+ZStack {
+    Color.blue
+        .overlay {
+            VisualLayoutGuide("Content Area")
+        }
+}
+```
+
+**Features:**
+- Visual bounds with semi-transparent overlay
+- Real-time size display (width × height)
+- Safe area inset visualization
+- Configurable alignment
+- Automatic collision avoidance for multiple guides
+- Draggable with persistence support
+
+**Advanced Usage:**
+
+```swift
+// Multiple guides with automatic stacking
+ZStack {
+    VisualLayoutGuide("View 1")
+    VisualLayoutGuide("View 2")
+    VisualLayoutGuide("View 3")
+}
+
+// Enable dragging and persistence
+VStack {
+    VisualLayoutGuide("Primary", persistenceKey: "primary-guide")
+}
+.visualLayoutGuideInteractions(dragEnabled: true, persistenceEnabled: true)
+
+// Test safe area behavior
+ZStack {
+    VisualLayoutGuide("In Safe Area")
+
+    VisualLayoutGuide("Ignoring Safe Area")
+        .ignoresSafeArea()
+}
+```
+
+---
+
+### 📍 Position Tracking
+
+#### `DraggablePositionView` - Coordinate Monitoring
+
+A draggable overlay that displays precise x/y coordinates and can be repositioned for testing.
+
+```swift
+ZStack {
+    Color.blue
+        .overlay {
+            DraggablePositionView("Position Tracker")
+        }
+}
+.draggablePositionViewInteractions(dragEnabled: true)
+```
+
+**Features:**
+- Real-time coordinate display
+- Drag gesture support
+- Coordinate space options (local, named, global)
+- Constraint system (horizontal/vertical only)
+- Persistence via UserDefaults
+
+**Advanced Usage:**
+
+```swift
+// Track global position
+DraggablePositionView(
+    "Global Coords",
+    coordinateSpace: .global
+)
+
+// Constrain to horizontal axis
+DraggablePositionView("Horizontal Only")
+    .draggablePositionViewConstraints(.horizontal)
+
+// With persistence
+DraggablePositionView("Persistent", persistenceKey: "main-tracker")
+    .draggablePositionViewInteractions(
+        dragEnabled: true,
+        persistenceEnabled: true,
+        persistenceNamespace: "debug"
+    )
+```
+
+---
+
+### 🔲 Grid Overlay
+
+#### `VisualGridGuide` - Alignment Grid
+
+Renders a perfect square grid overlay with automatic size calculation.
+
+```swift
+VisualGridGuide("Layout Grid")
+    .frame(width: 300, height: 200)
+```
+
+**Features:**
+- Automatic GCD-based grid calculation
+- Preferred square size with `.exact` or `.preferred` fit modes
+- Displays grid metrics (columns, rows, square size)
+- Adjustable line width
+
+**Advanced Usage:**
+
+```swift
+// Exact fit with specific square size
+VisualGridGuide("8pt Grid", squareSize: 8, fit: .exact)
+
+// Preferred fit (allows small gutters)
+VisualGridGuide("12pt Grid", squareSize: 12, fit: .preferred)
+
+// Fullscreen grid
+VisualGridGuide("Fullscreen", squareSize: 8, fit: .preferred)
+    .ignoresSafeArea()
+```
+
+---
+
+### 🎯 Container Shape Debugging (iOS 26+)
+
+#### `VisualCornerInsetGuide` - ConcentricRectangle Visualization
+
+Shows how ConcentricRectangle responds to container shapes.
+
+```swift
+@available(iOS 26.0, macOS 26.0, *)
+VisualCornerInsetGuide("Container Shape")
+    .frame(width: 220, height: 160)
+    .containerShape(RoundedRectangle(cornerRadius: 24))
+```
+
+---
+
+## **Debugging vs. Production**
+
+> **Important:** Loupe is a development utility intended solely for **debugging purposes**. Debug tools are conditionally compiled using Swift's `#if DEBUG` directive. This means that in production builds, the debugging code is automatically excluded, ensuring that your app remains lean without any unintended visual effects or performance overhead.
+
+> Please ensure that your project's build settings correctly define the DEBUG flag for development configurations.
+
+---
+
+## **Example Workflows**
+
+### Performance Debugging
+
+Identify unnecessary re-renders:
 
 ```swift
 struct CounterView: View {
     @State private var count = 0
-    
+
     var body: some View {
         VStack {
-            // This text will show a changing background color whenever count changes
+            // This will re-render on every count change
             Text("Count: \(count)")
-                .padding()
                 .debugRender()
-            
-            Button("Increment") {
-                count += 1
-            }
+
+            // This should NOT re-render
+            Text("Static Label")
+                .debugRender()
+
+            Button("Increment") { count += 1 }
         }
     }
 }
 ```
 
-In this example, every time the button is tapped, the Text view's background color will change because it depends on `count`.
+### Layout Testing
 
-#### Selective Debugging
-
-You can apply the modifier to specific views to see exactly which ones are being re-rendered:
+Test safe area and bounds:
 
 ```swift
-VStack {
-    Text("This will re-render: \(count)")
-        .debugRender() // This background will change color
-    
-    Text("Static text")
-        .debugRender() // This background will NOT change color
-    
-    Button("Increment") {
-        count += 1
+ZStack {
+    VisualLayoutGuide("Safe Area")
+        .foregroundStyle(.blue)
+
+    VisualLayoutGuide("Full Screen")
+        .foregroundStyle(.red)
+        .ignoresSafeArea()
+}
+.visualLayoutGuideInteractions(dragEnabled: true)
+```
+
+### Grid Alignment
+
+Verify pixel-perfect alignment:
+
+```swift
+ZStack {
+    VisualGridGuide("8pt Grid", squareSize: 8, fit: .exact)
+        .foregroundStyle(.gray.opacity(0.3))
+
+    // Your content here
+    VStack(spacing: 8) {
+        ForEach(0..<5) { _ in
+            RoundedRectangle(cornerRadius: 8)
+                .fill(.blue)
+                .frame(height: 40)
+        }
     }
-    .debugRender() // This only changes when the button itself re-renders
+    .padding(8)
 }
 ```
-
-#### Wrapper Approach
-
-The wrapper version only applies to the container, not its children:
-
-```swift
-// Only the VStack container gets the colored background
-DebugRender {
-    VStack {
-        Text("Last updated: \(Date().formatted())")
-        Text("Current count: \(count)")
-        Button("Reset") { count = 0 }
-    }
-}
-```
-
-To debug every element individually, apply the modifier to each component:
-
-```swift
-VStack {
-    Text("Updated: \(Date().formatted())")
-        .debugRender() // Gets its own color
-    
-    Text("Count: \(count)")
-        .debugRender() // Gets a different color
-    
-    Button("Reset") { count = 0 }
-        .debugRender() // Button gets its own color
-}
-```
-
-### debugCompute()
-
-The `debugCompute()` modifier highlights when SwiftUI recreates/reinitializes a view by briefly flashing it red. This shows when a view is being re-computed/re-initailized
-
-#### Basic Usage
-
-```swift
-Text("Hello World")
-    .padding()
-    .debugCompute()
-```
-
-This will flash red whenever the view is recreated (not just re-rendered).
-
-#### Interactive UI Elements
-
-Text fields are a particularly good example, as they re-compute on every keystroke:
-
-```swift
-@State private var searchText = ""
-
-TextField("Search...", text: $searchText)
-    .padding()
-    .debugCompute() // Will flash red with EVERY keystroke
-```
-
-The text field flashes because SwiftUI creates a new view instance for each character typed.
-
-#### Dependent Views
-
-Views that depend on changing state will flash when that state changes:
-
-```swift
-Text("Searching for: \(searchText)")
-    .padding()
-    .debugCompute() // Flashes whenever searchText changes
-```
-
-#### Conditional Content
-
-Toggling visibility creates entirely new view instances:
-
-```swift
-@State private var showDetails = false
-
-Button("Toggle Details") {
-    showDetails.toggle()
-}
-.debugCompute() // Flashes when tapped
-
-if showDetails {
-    VStack {
-        Text("These are the details")
-        Text("More information here")
-    }
-    .padding()
-    .debugCompute() // Flashes when appearing/disappearing
-}
-```
-
-#### Nested vs Non-Nested Usage
-
-Applying to a container affects the whole container's behavior:
-
-```swift
-// The entire structure flashes on each keystroke
-VStack {
-    TextField("Type here", text: $searchText) 
-    Text("Preview: \(searchText)")
-    Button("Clear", action: { searchText = "" })
-}
-.debugCompute() // Entire VStack reinitializes with each keystroke
-```
-
-Versus targeting specific components:
-
-```swift
-VStack {
-    // Only this component flashes with each keystroke
-    TextField("Type here", text: $searchText)
-        .debugCompute()
-    
-    // Only flashes when searchText changes
-    Text("Preview: \(searchText)")
-        .debugCompute()
-    
-    // Only flashes when tapped
-    Button("Clear") { searchText = "" }
-        .debugCompute()
-}
-```
-
-#### Wrapper Approach
-
-Like `debugRender()`, the wrapper only applies to the container:
-
-```swift
-DebugCompute {
-    VStack {
-        Text("Header")
-        Text("Content: \(searchText)")
-    }
-} // Only the VStack container flashes red, not each child view
-```
-
-These visualizations help you understand SwiftUI's view lifecycle and optimize your code for better performance by identifying unnecessary view recreations.
 
 ---
 
 ## **Key Components**
 
-- **DebugRender**  
-  A SwiftUI wrapper that uses a Canvas background to draw a random-colored, semi-transparent overlay each time a view is re-rendered. This provides a clear visual indication of which views are actually being re-rendered by SwiftUI's rendering system.
+### Render Debugging
+- **DebugRender** - Canvas-based random color overlay on re-renders
+- **DebugCompute** - Red flash animation on view re-initialization
+- **RenderCheck** - Batch wrapper for subview render debugging
 
-- **DebugCompute**  
-  A debugging wrapper that briefly flashes a red overlay when a view is re-computed/re-initialized (not just re-rendered).
+### Layout Inspection
+- **VisualLayoutGuide** - Comprehensive bounds/inset/size visualization
+- **DraggablePositionView** - Coordinate tracking with drag support
+- **VisualGridGuide** - Square grid overlay with smart sizing
 
-- **Extension Methods**  
-  Two extension methods on `View`:
-  - `.debugRender()` - Shows re-renders with changing colored backgrounds
-  - `.debugCompute()` - Shows re-computs/re-initalizations with red flashes
+### Container Debugging (iOS 26+)
+- **VisualCornerInsetGuide** - ConcentricRectangle shape visualization
 
-
-These components work together to provide a comprehensive visual debugging system for SwiftUI, helping developers understand both the rendering and computation aspects of SwiftUI's view lifecycle.
+### Infrastructure
+- **OverlayPositionCoordinator** - Automatic collision avoidance for overlays
+- **ConcentricRectangle** - Container-aware shape (with iOS 15+ fallback)
+- **LoupeGlassEffect** - Standalone glass material backgrounds
 
 ---
 
-### **_VariadicView Back‑Deployment**
+## **Platform Support**
 
-RenderMeThis leverages SwiftUI’s internal `_VariadicView` API to backport its render-check functionality on pre‑iOS 18 and pre‑macOS 15 systems. On iOS 18 and macOS 15 (and newer), we use SwiftUI’s native `Group(subviews:transform:)` API, but to support older OS versions we expose `_VariadicView` in the `RenderCheck` wrapper.
-
-When running on older platforms, `RenderCheck` wraps its child views inside a `_VariadicView.Tree` with a custom `_RenderCheckGroup` layout. This layout iterates over each child view and applies the `debugRender()` modifier, ensuring that render-checking is supported even on devices running older OS versions.
-
-> **Note:** The use of `_VariadicView` is strictly limited to pre‑iOS 18 and pre‑macOS 15 environments. On newer systems, we rely on the native APIs.
+- **iOS** 17.0+
+- **macOS** 14.0+
+- **tvOS** 17.0+
+- **watchOS** 10.0+
+- **visionOS** 1.0+
 
 ---
 
 ## **License**
 
-RenderMeThis is available under the MIT license. See the [LICENSE](LICENSE) file for more information.
+Loupe is available under the MIT license. See the [LICENSE](LICENSE) file for more information.
 
 ---
 
-<p align="center">Built with 🍏🔄🕵️‍♂️ by Aether</p>
+<p align="center">Built with 🔍 by Aether</p>
