@@ -131,7 +131,7 @@ private struct MetricsOverlay: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
-        .loupeGlassEffect(.regular, cornerRadius: 8)
+        .background(.thinMaterial, in: .rect(cornerRadius: 8))
     }
 }
 

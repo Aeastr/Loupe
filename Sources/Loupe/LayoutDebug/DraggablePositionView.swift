@@ -334,7 +334,7 @@ public struct DraggablePositionView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .loupeGlassEffect(.regular, cornerRadius: 20)
+        .background(.thinMaterial, in: .rect(cornerRadius: 20))
     }
 
     // MARK: - Drag Gesture

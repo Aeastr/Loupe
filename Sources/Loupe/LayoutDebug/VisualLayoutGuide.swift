@@ -682,7 +682,7 @@ public struct VisualLayoutGuide: View {
             .padding(.trailing, ((viewInsets?.trailing ?? 0) / scale) + 8)
         }
         .frame(width: 130, height: 130)
-        .loupeGlassEffect(.regular, cornerRadius: 0)
+        .background(.thinMaterial, in: .rect)
     }
 }
 
