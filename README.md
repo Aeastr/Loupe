@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="270" height="270" src="/assets/icon.png" alt="Loupe">
+  <img width="200" height="200" src="/assets/icon.png" alt="Loupe">
   <h1>Loupe</h1>
   <p>A SwiftUI debugging toolkit for visualizing renders, layouts, and measurements.</p>
 </div>
