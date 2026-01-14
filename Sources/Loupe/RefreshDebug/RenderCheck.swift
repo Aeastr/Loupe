@@ -1,6 +1,6 @@
 //
 //  RenderCheck.swift
-//  RenderMeThis
+//  Loupe
 //
 //  Created by Aether on 12/03/2025.
 //

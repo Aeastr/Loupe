@@ -1,75 +1,75 @@
 <div align="center">
-  <img width="200" height="200" src="/assets/icon.png" alt="Loupe">
-  <h1>Loupe</h1>
-  <p>A SwiftUI debugging toolkit for visualizing renders, layouts, and measurements.</p>
+  <img width="128" height="128" src="/resources/icon.png" alt="Loupe Icon">
+  <h1><b>Loupe</b></h1>
+  <p>
+    A SwiftUI debugging toolkit for visualizing renders, layouts, and measurements.
+  </p>
 </div>
 
-<div align="center">
-  <a href="https://swift.org">
-    <img src="https://img.shields.io/badge/Swift-6-orange.svg" alt="Swift 6">
-  </a>
-  <a href="https://www.apple.com/ios/">
-    <img src="https://img.shields.io/badge/iOS-17%2B-blue.svg" alt="iOS">
-  </a>
-  <a href="https://www.apple.com/macos/">
-    <img src="https://img.shields.io/badge/macOS-14%2B-blue.svg" alt="macOS">
-  </a>
-  <a href="https://www.apple.com/tvos/">
-    <img src="https://img.shields.io/badge/tvOS-17%2B-blue.svg" alt="tvOS">
-  </a>
-  <a href="https://www.apple.com/visionos/">
-    <img src="https://img.shields.io/badge/visionOS-1%2B-purple.svg" alt="visionOS">
-  </a>
-  <a href="https://www.apple.com/watchos/">
-    <img src="https://img.shields.io/badge/watchOS-10%2B-red.svg" alt="watchOS">
-  </a>
-  <a href="https://github.com/Aeastr/Loupe/wiki">
-    <img src="https://img.shields.io/badge/docs-wiki-blue.svg" alt="Documentation">
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License">
-  </a>
-</div>
+<p align="center">
+  <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-6.0+-F05138?logo=swift&logoColor=white" alt="Swift 6.0+"></a>
+  <a href="https://developer.apple.com"><img src="https://img.shields.io/badge/iOS-17+-000000?logo=apple" alt="iOS 17+"></a>
+  <a href="https://developer.apple.com"><img src="https://img.shields.io/badge/macOS-14+-000000?logo=apple" alt="macOS 14+"></a>
+  <a href="https://developer.apple.com"><img src="https://img.shields.io/badge/tvOS-17+-000000?logo=apple" alt="tvOS 17+"></a>
+  <a href="https://developer.apple.com"><img src="https://img.shields.io/badge/watchOS-10+-000000?logo=apple" alt="watchOS 10+"></a>
+  <a href="https://developer.apple.com"><img src="https://img.shields.io/badge/visionOS-1+-000000?logo=apple" alt="visionOS 1+"></a>
+</p>
 
----
 
 ## Overview
 
-Loupe provides runtime debugging tools for SwiftUI applications. Visualize render cycles, inspect layout bounds, track positions, and overlay precision grids—all with minimal setup.
+Loupe provides runtime debugging tools for SwiftUI applications. Visualize render cycles, inspect layout bounds, track positions, and overlay precision grids—all with minimal setup and zero impact on production builds.
 
-**[Read the full documentation →](https://github.com/Aeastr/Loupe/wiki)**
+**Render Debugging**
+- `.debugRender()` - Visualize when views re-render with colored backgrounds
+- `.debugCompute()` - Visualize when views re-initialize with red flashes
+- `RenderCheck` - Batch debugging wrapper for multiple views
 
----
+**Layout Inspection**
+- `VisualLayoutGuide` - Display bounds, safe area insets, and dimensions
+- `DraggablePositionView` - Track coordinates with draggable overlays
+- `VisualGridGuide` - Overlay precision alignment grids
+
+**Container Shapes (iOS 26+)**
+- `VisualCornerInsetGuide` - Visualize ConcentricRectangle and container shapes
+
 
 ## Installation
 
-### Swift Package Manager
-
+```swift
+dependencies: [
+    .package(url: "https://github.com/Aeastr/Loupe.git", from: "1.0.0")
+]
 ```
-https://github.com/Aeastr/Loupe.git
+
+```swift
+import Loupe
 ```
 
-Add via Xcode: **File → Add Packages** and paste the URL above.
 
----
-
-## Quick Start
+## Usage
 
 ### Render Debugging
 
 See when views re-render or re-compute:
 
 ```swift
-import Loupe
-
 Text("Count: \(count)")
     .debugRender()      // Shows re-renders with colored backgrounds
     .debugCompute()     // Shows re-computations with red flashes
 ```
 
-**[Learn more about render debugging →](https://github.com/Aeastr/Loupe/wiki/Render-Debugging)**
+Batch debug multiple views:
 
----
+```swift
+RenderCheck {
+    Text("A")
+    Text("B")
+    Text("C")
+}
+```
+
+[Full documentation →](docs/RenderDebugging.md)
 
 ### Layout Inspection
 
@@ -91,9 +91,7 @@ VisualLayoutGuide("Debug View")
     .visualLayoutGuideInteractions(dragEnabled: true, persistenceEnabled: true)
 ```
 
-**[Learn more about layout guides →](https://github.com/Aeastr/Loupe/wiki/Visual-Layout-Guide)**
-
----
+[Full documentation →](docs/VisualLayoutGuide.md)
 
 ### Position Tracking
 
@@ -104,9 +102,7 @@ DraggablePositionView("Tracker")
     .draggablePositionViewInteractions(dragEnabled: true)
 ```
 
-**[Learn more about position tracking →](https://github.com/Aeastr/Loupe/wiki/Draggable-Position-View)**
-
----
+[Full documentation →](docs/DraggablePositionView.md)
 
 ### Grid Overlays
 
@@ -117,50 +113,38 @@ VisualGridGuide("8pt Grid", squareSize: 8, fit: .exact)
     .ignoresSafeArea()
 ```
 
-**[Learn more about grid guides →](https://github.com/Aeastr/Loupe/wiki/Visual-Grid-Guide)**
+[Full documentation →](docs/VisualGridGuide.md)
 
----
+### Container Shapes (iOS 26+)
 
-## Features
+Visualize ConcentricRectangle and container shapes:
 
-**Render Debugging**
-- `.debugRender()` - Visualize re-renders
-- `.debugCompute()` - Visualize re-computations
-- `RenderCheck` - Batch debugging wrapper
+```swift
+VisualCornerInsetGuide("Container Shape")
+    .padding(20)
+    .containerShape(RoundedRectangle(cornerRadius: 32))
+```
 
-**Layout Inspection**
-- `VisualLayoutGuide` - Bounds, insets, and dimensions
-- `DraggablePositionView` - Coordinate tracking
-- `VisualGridGuide` - Alignment grids
+[Full documentation →](docs/VisualCornerInsetGuide.md)
 
-**Container Shapes (iOS 26+)**
-- `VisualCornerInsetGuide` - ConcentricRectangle visualization
 
-**[View all features →](https://github.com/Aeastr/Loupe/wiki)**
+## How It Works
 
----
+All debugging tools are conditionally compiled with `#if DEBUG`. They are automatically excluded from release builds—no manual cleanup required, no performance impact in production.
 
-## Production Builds
+- **debugRender()** uses a `Canvas` that generates a random color on each render
+- **debugCompute()** uses a `LocalRenderManager` that triggers a red flash on view initialization
+- **VisualLayoutGuide** uses `onGeometryChange` for efficient size/inset tracking with automatic collision detection
+- **VisualGridGuide** calculates optimal square sizes using GCD for perfect tiling
 
-All debugging tools are conditionally compiled with `#if DEBUG`. They are automatically excluded from release builds—no manual cleanup required.
+[API Reference →](docs/APIReference.md)
 
----
 
-## Documentation
+## Contributing
 
-- **[Wiki Home](https://github.com/Aeastr/Loupe/wiki)** - Complete documentation
-- **[Render Debugging](https://github.com/Aeastr/Loupe/wiki/Render-Debugging)** - debugRender(), debugCompute(), RenderCheck
-- **[Visual Layout Guide](https://github.com/Aeastr/Loupe/wiki/Visual-Layout-Guide)** - Bounds and inset inspection
-- **[Draggable Position View](https://github.com/Aeastr/Loupe/wiki/Draggable-Position-View)** - Position tracking
-- **[Visual Grid Guide](https://github.com/Aeastr/Loupe/wiki/Visual-Grid-Guide)** - Grid overlays
-- **[API Reference](https://github.com/Aeastr/Loupe/wiki/API-Reference)** - Complete API documentation
+Contributions welcome. Please feel free to submit a Pull Request.
 
----
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-<p align="center">by <a href="https://github.com/Aeastr">Aether</a></p>
+MIT. See [LICENSE](LICENSE) for details.

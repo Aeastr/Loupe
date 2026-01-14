@@ -1,6 +1,6 @@
 //
 //  ComputeDebugView.swift
-//  RenderMeThis
+//  Loupe
 //
 //  Created by Aether on 25/04/2025.
 //
