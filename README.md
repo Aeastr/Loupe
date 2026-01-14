@@ -137,8 +137,6 @@ All debugging tools are conditionally compiled with `#if DEBUG`. They are automa
 - **VisualLayoutGuide** uses `onGeometryChange` for efficient size/inset tracking with automatic collision detection
 - **VisualGridGuide** calculates optimal square sizes using GCD for perfect tiling
 
-[API Reference →](docs/APIReference.md)
-
 
 ## Contributing
 
